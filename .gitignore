@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 mas-iptv-firebase-credentials.json
 /public/uploads
+composer.lock
