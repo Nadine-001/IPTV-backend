@@ -2,23 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hotel;
 use App\Models\Room;
 use App\Models\RoomService;
 use App\Models\Television;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class RoomController extends Controller
 {
-    public function header($hotel_id, $room_id)
+    public function room_header($room_number_id)
     {
         try {
-            $hotel = Hotel::findOrFail($hotel_id)->first();
-            $television = Television::where('room_id', $room_id)->first();
+            $television = Television::where('id', $room_number_id)->first();
 
             $guest_name = $television->guest_name;
-            $hotel_logo = $hotel->logo;
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get header',
@@ -28,17 +23,19 @@ class RoomController extends Controller
 
         return response()->json([
             'guest_name' => $guest_name,
-            'hotel_logo' => $hotel_logo,
         ]);
     }
 
-    public function room_about(Request $request, $hotel_id, $room_id)
+    public function room_about($room_number_id)
     {
         try {
-            $room = Room::findOrFail($room_id)->first();
+            $television = Television::where('id', $room_number_id)->first();
 
-            $room_number = $room->number;
-            $room_type = $room->type;
+            $room_number = $television->room_number;
+            $room_type = $television->room_type;
+
+            $room = Room::where('type', $room_type)->first();
+
             $room_facility = $room->facility;
             $room_description = $room->description;
             $room_image = $room->image;
@@ -58,10 +55,10 @@ class RoomController extends Controller
         ]);
     }
 
-    public function room_service(Request $request, $room_id)
+    public function room_service($hotel_id)
     {
         try {
-            $services = RoomService::where('room_id', $room_id)->get();
+            $services = RoomService::where('hotel_id', $hotel_id)->get();
 
             $services_data = [];
 
