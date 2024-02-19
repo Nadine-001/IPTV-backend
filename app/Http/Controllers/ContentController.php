@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Content;
+// use App\Models\Content;
 use App\Models\Hotel;
 use App\Models\HotelFacilities;
 use App\Models\Menu;
@@ -14,6 +14,421 @@ use Illuminate\Support\Facades\Validator;
 
 class ContentController extends Controller
 {
+    public function greeting(Request $request, $hotel_id)
+    {
+        $hotel = Hotel::where('id', intval($hotel_id))->first();
+
+        $validator = Validator::make($request->all(), [
+            'greeting' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $hotel->update([
+                'greeting' => $request->greeting,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save greeting content',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('greeting content added succesfully');
+    }
+
+    public function hotel_name($hotel_id)
+    {
+        $hotel = Hotel::where('id', intval($hotel_id))->first();
+
+        try {
+            $hotel_name = $hotel->name;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get hotel name',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'hotel_name' => $hotel_name,
+        ]);
+    }
+
+    public function hotel_about(Request $request, $hotel_id)
+    {
+        $hotel = Hotel::where('id', intval($hotel_id))->first();
+
+        $validator = Validator::make($request->all(), [
+            'hotel_class' => 'required',
+            'hotel_about' => 'required',
+            'hotel_check_in' => 'required',
+            'hotel_check_out' => 'required',
+            'hotel_photo' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->hotel_photo->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_hotel_photo = asset("uploads/hotel_about/" . $file_name);
+            $request->hotel_photo->move(public_path('uploads/hotel_about/'), $file_name);
+
+            $hotel->update([
+                // 'name' => $request->hotel_name,
+                'class' => $request->hotel_class,
+                'about' => $request->hotel_about,
+                'check_in' => $request->hotel_check_in,
+                'check_out' => $request->hotel_check_out,
+                'photo' => $path_hotel_photo,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save hotel info',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('hotel info added succesfully');
+    }
+
+    public function hotel_facilities_create(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'image' => 'required',
+            'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/hotel_facilities/" . $file_name);
+            $request->image->move(public_path('uploads/hotel_facilities/'), $file_name);
+
+            HotelFacilities::create([
+                'hotel_id' => $hotel_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'image' => $path_image
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save hotel facilities',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('hotel facilities added succesfully');
+    }
+
+    public function hotel_facilities_update(Request $request, $facility_id)
+    {
+        $facility = HotelFacilities::where('id', $facility_id)->first();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'image' => 'required',
+            'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/hotel_facilities/" . $file_name);
+            $request->image->move(public_path('uploads/hotel_facilities/'), $file_name);
+
+            $facility->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'image' => $path_image
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update hotel facilities',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('hotel facilities updated succesfully');
+    }
+
+    public function hotel_facilities_delete($facility_id)
+    {
+        $facility = HotelFacilities::where('id', intval($facility_id))->first();
+        $deleted = $facility->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                "message" => "failed delete hotel facility"
+            ], 400);
+        }
+
+        return response()->json([
+            "message" => "hotel facility deleted successfully"
+        ]);
+    }
+
+    public function room_about_create(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+            'facility' => 'required',
+            'description' => 'required',
+            'image' => 'required',
+            // 'television' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/about/" . $file_name);
+            $request->image->move(public_path('uploads/about/'), $file_name);
+
+            Room::create([
+                'hotel_id' => $hotel_id,
+                'type' => $request->type,
+                'facility' => $request->facility,
+                'description' => $request->description,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save room about',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('room about added succesfully');
+    }
+
+    public function room_about_update(Request $request, $room_id)
+    {
+        $room = Room::where('id', $room_id)->first();
+
+        $validator = Validator::make($request->all(), [
+            'facility' => 'required',
+            'description' => 'required',
+            'image' => 'required',
+            // 'television' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/about/" . $file_name);
+            $request->image->move(public_path('uploads/about/'), $file_name);
+
+            $room->update([
+                'facility' => $request->facility,
+                'description' => $request->description,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update room about',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('room about updated succesfully');
+    }
+
+    public function amenities_create(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/room_services/" . $file_name);
+            $request->image->move(public_path('uploads/room_services/'), $file_name);
+
+            RoomService::create([
+                'hotel_id' => $hotel_id,
+                'name' => $request->name,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save amenities',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('amenities added succesfully');
+    }
+
+    public function amenities_update(Request $request, $service_id)
+    {
+        $service = RoomService::where('id', intval($service_id))->first();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/room_services/" . $file_name);
+            $request->image->move(public_path('uploads/room_services/'), $file_name);
+
+            $service->update([
+                'name' => $request->name,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update amenities',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('amenities updated succesfully');
+    }
+
+    public function amenities_delete(Request $request, $service_id)
+    {
+        $service = RoomService::where('id', intval($service_id))->first();
+        $deleted = $service->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                "message" => "failed delete room service"
+            ], 400);
+        }
+
+        return response()->json([
+            "message" => "room service deleted successfully"
+        ]);
+    }
+
+    public function menu_create(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/menu/" . $file_name);
+            $request->image->move(public_path('uploads/menu/'), $file_name);
+
+            Menu::create([
+                'hotel_id' => $hotel_id,
+                'type' => $request->type,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save menu',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('menu added succesfully');
+    }
+
+    public function menu_update(Request $request, $menu_id)
+    {
+        $menu = Menu::where('id', intval($menu_id))->first();
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/menu/" . $file_name);
+            $request->image->move(public_path('uploads/menu/'), $file_name);
+
+            $menu->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to updated menu',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('menu updated succesfully');
+    }
+
+    public function menu_delete(Request $request, $menu_id)
+    {
+        $menu = Menu::find($menu_id)->first();
+        $deleted = $menu->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                "message" => "failed delete menu"
+            ], 400);
+        }
+
+        return response()->json([
+            "message" => "menu deleted successfully"
+        ]);
+    }
+
     public function add_content(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -148,8 +563,8 @@ class ContentController extends Controller
         ]);
     }
 
-    public function show_content()
-    {
-        return response()->json(Content::all());
-    }
+    // public function show_content()
+    // {
+    //     return response()->json(Content::all());
+    // }
 }
