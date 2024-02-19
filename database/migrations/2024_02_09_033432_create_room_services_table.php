@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('room_services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->index();
-            $table->foreign('room_id')->references('id')->on('rooms');
+            $table->foreignId('hotel_id')->index();
+            $table->foreign('hotel_id')->references('id')->on('hotels');
             $table->string('name');
             $table->string('image')->nullable();
             $table->timestamps();

@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('televisions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->index();
-            $table->foreign('room_id')->references('id')->on('rooms');
+            $table->foreignId('hotel_id')->index();
+            $table->foreign('hotel_id')->references('id')->on('hotels');
+            $table->integer('room_number');
+            $table->string('room_type')->nullable();
             $table->string('mac_address');
             $table->string('guest_name')->nullable();
             $table->string('guest_gender')->nullable();

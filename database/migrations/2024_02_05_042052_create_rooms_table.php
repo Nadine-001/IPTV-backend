@@ -15,12 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('hotel_id')->index();
             $table->foreign('hotel_id')->references('id')->on('hotels');
-            $table->integer('number');
             $table->string('type')->nullable();
             $table->string('facility')->nullable();
             $table->string('description')->nullable();
             $table->string('image')->nullable();
-            $table->integer('television');
+            $table->integer('television')->nullable();
             $table->timestamps();
         });
     }

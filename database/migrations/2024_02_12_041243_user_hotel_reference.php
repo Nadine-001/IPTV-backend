@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('role_id')->index()->after('id');
             $table->foreign('role_id')->references('id')->on('roles');
-            $table->foreignId('hotel_id')->index()->after('role_id');
+            $table->foreignId('hotel_id')->nullable()->index()->after('role_id');
             $table->foreign('hotel_id')->references('id')->on('hotels');
         });
     }

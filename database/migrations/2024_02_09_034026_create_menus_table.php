@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('hotel_id')->index();
             $table->foreign('hotel_id')->references('id')->on('hotels');
+            $table->string('type');
             $table->string('name');
             $table->string('description');
             $table->float('price');
-            $table->float('rating');
             $table->string('image')->nullable();
             $table->timestamps();
         });
