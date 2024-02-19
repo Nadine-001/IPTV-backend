@@ -25,7 +25,8 @@ class Hotel extends Model
         'langitude',
         'logo',
         'order_food_intro',
-        'qr_code',
+        'qr_code_payment',
+        'qr_code_wifi',
     ];
 
     public function user(): HasMany
@@ -38,13 +39,23 @@ class Hotel extends Model
         return $this->hasMany(HotelFacilities::class);
     }
 
-    public function menu(): HasMany
-    {
-        return $this->hasMany(Menu::class);
-    }
-
     public function room(): HasMany
     {
         return $this->hasMany(Room::class);
+    }
+
+    public function room_service(): HasMany
+    {
+        return $this->hasMany(RoomService::class);
+    }
+
+    public function television(): HasMany
+    {
+        return $this->hasMany(Television::class);
+    }
+
+    public function menu(): HasMany
+    {
+        return $this->hasMany(Menu::class);
     }
 }

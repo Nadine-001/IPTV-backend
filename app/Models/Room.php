@@ -13,7 +13,6 @@ class Room extends Model
 
     protected $fillable = [
         'hotel_id',
-        'number',
         'type',
         'facility',
         'description',
@@ -26,13 +25,13 @@ class Room extends Model
         return $this->belongsTo(Hotel::class);
     }
 
-    public function room_service(): HasMany
-    {
-        return $this->hasMany(RoomService::class);
-    }
+    // public function room_service(): HasMany
+    // {
+    //     return $this->hasMany(RoomService::class);
+    // }
 
-    public function television(): HasMany
-    {
-        return $this->hasMany(Television::class);
-    }
+    // public function television(): HasMany
+    // {
+    //     return $this->hasMany(Television::class);
+    // }
 }

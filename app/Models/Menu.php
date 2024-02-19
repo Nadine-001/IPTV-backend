@@ -12,10 +12,10 @@ class Menu extends Model
 
     protected $fillable = [
         'hotel_id',
+        'type',
         'name',
         'description',
         'price',
-        'rating',
         'image',
     ];
 

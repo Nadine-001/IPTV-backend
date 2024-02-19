@@ -11,7 +11,9 @@ class Television extends Model
     use HasFactory;
 
     protected $fillable = [
-        'room_id',
+        'hotel_id',
+        'room_number',
+        'room_type',
         'mac_address',
         'guest_name',
         'guest_gender',
@@ -19,6 +21,6 @@ class Television extends Model
 
     public function room(): BelongsTo
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Hotel::class);
     }
 }

@@ -11,13 +11,13 @@ class RoomService extends Model
     use HasFactory;
 
     protected $fillable = [
-        'room_id',
+        'hotel_id',
         'name',
         'image',
     ];
 
     public function room(): BelongsTo
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Hotel::class);
     }
 }
