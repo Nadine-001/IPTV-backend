@@ -13,7 +13,7 @@ class HotelController extends Controller
     public function hotel_greeting(Request $request, $hotel_id)
     {
         $validator = Validator::make($request->all(), [
-            'television_id' => 'required',
+            'mac_address' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -22,7 +22,7 @@ class HotelController extends Controller
 
         try {
             $hotel = Hotel::where('id', $hotel_id)->first();
-            $television = Television::where('id', $request->television_id)->first();
+            $television = Television::where('mac_address', $request->mac_address)->first();
 
             $room_number = $television->room_number;
             $room_type = $television->room_type;
