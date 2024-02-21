@@ -4,16 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Hotel;
 use App\Models\Menu;
+use App\Models\Television;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class MenuController extends Controller
 {
-    public function menu_list($hotel_id) {
+    public function menu_list(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
         try {
-            $hotel = Hotel::where('id', $hotel_id)->first();
-            $menus = Menu::where('hotel_id', $hotel_id)->get();
+            $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
+            $menus = Menu::where('hotel_id', $hotel->id)->get();
 
             $order_food_intro = $hotel->order_food_intro;
-            $menus_data = [];
+            $menu_data = [];
 
             foreach ($menus as $menu) {
                 $menu_type = $menu->type;
@@ -23,7 +35,7 @@ class MenuController extends Controller
                 $menu_rating = $menu->rating;
                 $menu_image = $menu->image;
 
-                $menus_data[] = [
+                $menu_data[] = [
                     'menu_type' => $menu_type,
                     'menu_name' => $menu_name,
                     'menu_description' => $menu_description,
@@ -41,14 +53,23 @@ class MenuController extends Controller
 
         return response()->json([
             'order_food_intro' => $order_food_intro,
-            'menus_data' => $menus_data,
+            'menu_data' => $menu_data,
         ]);
     }
 
-    public function qr_code($hotel_id) {
-        try {
-            $hotel = Hotel::where('id', $hotel_id)->first();
+    public function qr_code(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
+            
             $qr_code_payment = $hotel->qr_code_payment;
         } catch (\Throwable $th) {
             return response()->json([

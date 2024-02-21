@@ -2,16 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hotel;
 use App\Models\Room;
 use App\Models\RoomService;
 use App\Models\Television;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RoomController extends Controller
 {
-    public function room_header($room_number_id)
+    public function room_header(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
         try {
-            $television = Television::where('id', $room_number_id)->first();
+            $television = Television::where('mac_address', $request->mac_address)->first();
 
             $guest_name = $television->guest_name;
         } catch (\Throwable $th) {
@@ -26,10 +37,10 @@ class RoomController extends Controller
         ]);
     }
 
-    public function room_about($room_number_id)
+    public function room_about(Request $request)
     {
         try {
-            $television = Television::where('id', $room_number_id)->first();
+            $television = Television::where('mac_address', $request->mac_address)->first();
 
             $room_number = $television->room_number;
             $room_type = $television->room_type;
@@ -55,10 +66,20 @@ class RoomController extends Controller
         ]);
     }
 
-    public function room_service($hotel_id)
+    public function room_service(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
         try {
-            $services = RoomService::where('hotel_id', $hotel_id)->get();
+            $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
+            $services = RoomService::where('hotel_id', $hotel->id)->get();
 
             $services_data = [];
 
@@ -78,6 +99,8 @@ class RoomController extends Controller
             ], 400);
         }
 
-        return response()->json($services_data);
+        return response()->json([
+            'services_data' => $services_data
+        ]);
     }
 }

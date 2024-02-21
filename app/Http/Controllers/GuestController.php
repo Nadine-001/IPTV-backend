@@ -31,8 +31,6 @@ class GuestController extends Controller
     {
         $room = Television::where('id', $room_number_id)->first();
 
-        // dd($room);
-
         $validator = Validator::make($request->all(), [
             'room_type' => 'required',
             'guest_name' => 'required',
@@ -40,7 +38,7 @@ class GuestController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 400);
         }
 
         try {

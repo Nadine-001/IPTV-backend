@@ -7,6 +7,7 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,26 +22,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/content', [ContentController::class, 'add_content']);
-Route::get('/content', [ContentController::class, 'show_content']);
+// Route::post('/content', [ContentController::class, 'add_content']);
+// Route::get('/content', [ContentController::class, 'show_content']);
 
 // HOTEL
-Route::get('/home/{hotel_id}', [HotelController::class, 'home']);
-Route::get('/greeting/{hotel_id}', [HotelController::class, 'hotel_greeting']);
-Route::get('/about/{hotel_id}', [HotelController::class, 'hotel_about']);
-Route::get('/location/{hotel_id}', [HotelController::class, 'hotel_location']);
-Route::get('/facilites/{hotel_id}', [HotelController::class, 'hotel_facilites']);
+Route::get('/home', [HotelController::class, 'home']);
+Route::get('/greeting', [HotelController::class, 'hotel_greeting']);
+Route::get('/about', [HotelController::class, 'hotel_about']);
+Route::get('/location', [HotelController::class, 'hotel_location']);
+Route::get('/facilites', [HotelController::class, 'hotel_facilites']);
 
 // ROOM
-Route::get('/room_header/{room_number_id}', [RoomController::class, 'room_header']);
-Route::get('/room_about/{room_number_id}', [RoomController::class, 'room_about']);
-Route::get('/room_service/{hotel_id}', [RoomController::class, 'room_service']);
+Route::get('/room_header', [RoomController::class, 'room_header']);
+Route::get('/room_about', [RoomController::class, 'room_about']);
+Route::get('/room_service', [RoomController::class, 'room_service']);
 
-//MENU
-Route::get('/menu_list/{hotel_id}', [MenuController::class, 'menu_list']);
-Route::get('/qr_code/{hotel_id}', [MenuController::class, 'qr_code']);
+// ROOM SERVICE REQUEST
 
-//CONTENT ADMIN
+
+// MENU
+Route::get('/menu_list', [MenuController::class, 'menu_list']);
+Route::get('/qr_code', [MenuController::class, 'qr_code']);
+
+//FOOD ORDER REQUEST
+
+
+// CONTENT ADMIN
 Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
 Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_name']);
 Route::post('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about']);
@@ -56,9 +63,15 @@ Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
 Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
 Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
 
-//RECEPTIONIST
+// RECEPTIONIST
 Route::get('/room_list/{hotel_id}', [GuestController::class, 'room_list']);
-Route::post('/guest/{hotel_id}', [GuestController::class, 'guest']);
+Route::post('/guest/{room_number_id}', [GuestController::class, 'guest']);
+
+// SERVICE ADMIN
+Route::get('/room_service_list/{hotel_id}', [ServiceController::class, 'room_service_list']);
+Route::get('/room_service_detail/{room_service_request_id}', [ServiceController::class, 'room_service_detail']);
+Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
+Route::get('/food_service_detail/{menu_service_request_id}', [ServiceController::class, 'food_service_detail']);
 
 // SUPERADMIN
 Route::post('/login', [AuthController::class, 'login']);

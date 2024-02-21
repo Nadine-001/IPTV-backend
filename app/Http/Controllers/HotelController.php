@@ -10,19 +10,19 @@ use Illuminate\Support\Facades\Validator;
 
 class HotelController extends Controller
 {
-    public function hotel_greeting(Request $request, $hotel_id)
+    public function hotel_greeting(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 400);
         }
 
         try {
-            $hotel = Hotel::where('id', $hotel_id)->first();
             $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
 
             $room_number = $television->room_number;
             $room_type = $television->room_type;
@@ -45,19 +45,19 @@ class HotelController extends Controller
         ]);
     }
 
-    public function home(Request $request, $hotel_id)
+    public function home(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 400);
         }
 
         try {
-            $hotel = Hotel::where('id', $hotel_id)->first();
             $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
 
             $room_number = $television->room_number;
             $room_type = $television->room_type;
@@ -78,10 +78,19 @@ class HotelController extends Controller
         ]);
     }
 
-    public function hotel_about($hotel_id)
+    public function hotel_about(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
         try {
-            $hotel = Hotel::where('id', $hotel_id)->first();
+            $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
 
             $hotel_name = $hotel->name;
             $hotel_class = $hotel->class;
@@ -106,10 +115,19 @@ class HotelController extends Controller
         ]);
     }
 
-    public function hotel_location($hotel_id)
+    public function hotel_location(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
         try {
-            $hotel = Hotel::where('id', $hotel_id)->first();
+            $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
 
             $hotel_address = $hotel->address;
             $hotel_longitude = $hotel->longitude;
@@ -130,11 +148,20 @@ class HotelController extends Controller
         ]);
     }
 
-    public function hotel_facilites($hotel_id)
+    public function hotel_facilites(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
         try {
-            // $hotel = Hotel::findOrFail($hotel_id);
-            $facilities = HotelFacilities::where('hotel_id', $hotel_id)->get();
+            $television = Television::where('mac_address', $request->mac_address)->first();
+            $hotel = Hotel::where('id', $television->hotel_id)->first();
+            $facilities = HotelFacilities::where('hotel_id', $hotel->id)->get();
 
             $facilities_data = [];
 
