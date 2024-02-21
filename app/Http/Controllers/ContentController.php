@@ -68,6 +68,8 @@ class ContentController extends Controller
             'hotel_check_in' => 'required',
             'hotel_check_out' => 'required',
             'hotel_photo' => 'required',
+            'hotel_qr_code_wifi' => 'required',
+            'hotel_qr_code_payment' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -77,16 +79,28 @@ class ContentController extends Controller
         try {
             $file_name = time() . " - " . $request->hotel_photo->getClientOriginalName();
             $file_name = str_replace(' ', '', $file_name);
-            $path_hotel_photo = asset("uploads/hotel_about/" . $file_name);
-            $request->hotel_photo->move(public_path('uploads/hotel_about/'), $file_name);
+            $path_hotel_photo = asset("uploads/hotel_photo/" . $file_name);
+            $request->hotel_photo->move(public_path('uploads/hotel_photo/'), $file_name);
+            // dd($path_hotel_photo);
+
+            $file_name = time() . " - " . $request->hotel_qr_code_wifi->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_hotel_qr_code_wifi = asset("uploads/hotel_qr_code_wifi/" . $file_name);
+            $request->hotel_qr_code_wifi->move(public_path('uploads/hotel_qr_code_wifi/'), $file_name);
+
+            $file_name = time() . " - " . $request->hotel_qr_code_payment->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_hotel_qr_code_payment = asset("uploads/hotel_qr_code_payment/" . $file_name);
+            $request->hotel_qr_code_payment->move(public_path('uploads/hotel_qr_code_payment/'), $file_name);
 
             $hotel->update([
-                // 'name' => $request->hotel_name,
                 'class' => $request->hotel_class,
                 'about' => $request->hotel_about,
                 'check_in' => $request->hotel_check_in,
                 'check_out' => $request->hotel_check_out,
                 'photo' => $path_hotel_photo,
+                'qr_code_wifi' => $path_hotel_qr_code_wifi,
+                'qr_code_payment' => $path_hotel_qr_code_payment,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
