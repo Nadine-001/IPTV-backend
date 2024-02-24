@@ -25,7 +25,6 @@ class MenuController extends Controller
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
             $order_food_intro = $hotel->order_food_intro;
-
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get menu',
@@ -63,9 +62,10 @@ class MenuController extends Controller
                 $menu_price = $menu->price;
                 $menu_image = $menu->image;
 
-                $menu_data[] = [
+                $menu_data[$menu_type] = [];
+
+                $menu_data[$menu_type][] = [
                     'menu_id' => $menu_id,
-                    'menu_type' => $menu_type,
                     'menu_name' => $menu_name,
                     'menu_description' => $menu_description,
                     'menu_price' => $menu_price,
