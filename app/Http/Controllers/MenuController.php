@@ -62,7 +62,9 @@ class MenuController extends Controller
                 $menu_price = $menu->price;
                 $menu_image = $menu->image;
 
-                $menu_data[$menu_type] = [];
+                if (!isset($menu_data[$menu_type])) {
+                    $menu_data[$menu_type] = [];
+                }
 
                 $menu_data[$menu_type][] = [
                     'menu_id' => $menu_id,
