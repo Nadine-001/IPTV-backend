@@ -63,10 +63,13 @@ class MenuController extends Controller
                 $menu_image = $menu->image;
 
                 if (!isset($menu_data[$menu_type])) {
-                    $menu_data[$menu_type] = [];
+                    $menu_data[$menu_type] = [
+                        'menu_type' => $menu_type,
+                        'menu' => []
+                    ];
                 }
 
-                $menu_data[$menu_type][] = [
+                $menu_data[$menu_type]['menu'][] = [
                     'menu_id' => $menu_id,
                     'menu_name' => $menu_name,
                     'menu_description' => $menu_description,
@@ -74,6 +77,8 @@ class MenuController extends Controller
                     'menu_image' => $menu_image,
                 ];
             }
+            
+            $menu_data = array_values($menu_data);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get menu',
