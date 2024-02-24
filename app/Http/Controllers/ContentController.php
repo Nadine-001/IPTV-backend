@@ -349,6 +349,32 @@ class ContentController extends Controller
         ]);
     }
 
+    public function ads_lips_menu(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'ads_lips' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $hotel = Hotel::where('id', $hotel_id)->first();
+
+            $hotel->update([
+                'order_food_intro' => $request->ads_lips
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save ads lips menu',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('ads lips menu added succesfully');
+    }
+
     public function menu_create(Request $request, $hotel_id)
     {
         $validator = Validator::make($request->all(), [
