@@ -6,19 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Menu extends Model
+class FoodServiceRequest extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'hotel_id',
-        'type',
-        'name',
-        'description',
-        'price',
-        'image',
+        'television_id',
+        'is_accepted',
+        'total',
+        'payment_method',
     ];
 
     public function hotel(): BelongsTo
@@ -26,13 +24,13 @@ class Menu extends Model
         return $this->belongsTo(Hotel::class);
     }
 
-    public function food_service_request_detail(): HasOne
+    public function television(): BelongsTo
     {
-        return $this->hasOne(FoodServiceRequestDetail::class);
+        return $this->belongsTo(Television::class);
     }
 
-    public function temp_cart_food(): HasMany
+    public function food_service_request_detail(): HasMany
     {
-        return $this->hasMany(TempCartFoodService::class);
+        return $this->hasMany(FoodServiceRequestDetail::class);
     }
 }
