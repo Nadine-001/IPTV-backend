@@ -18,7 +18,7 @@ class RoomServiceRequestController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
-            'quantity' => 'required',
+            // 'quantity' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -33,7 +33,7 @@ class RoomServiceRequestController extends Controller
                 'hotel_id' => $hotel->id,
                 'television_id' => $television->id,
                 'room_service_id' => $service_id,
-                'qty' => $request->quantity,
+                'qty' => 1,
                 'note' => $request->note,
             ]);
         } catch (\Throwable $th) {

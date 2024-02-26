@@ -19,7 +19,7 @@ class FoodServiceRequestController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
-            'quantity' => 'required',
+            // 'quantity' => 'required',
             // 'orders' => 'required|array',
             // 'total' => 'required',
             // 'payment_method' => 'required',
@@ -38,7 +38,7 @@ class FoodServiceRequestController extends Controller
                 'hotel_id' => $hotel->id,
                 'television_id' => $television->id,
                 'menu_id' => $menu_id,
-                'qty' => $request->quantity,
+                'qty' => 1,
                 // 'total' => $request->total,
                 // 'payment_method' => $request->payment_method,
             ]);
