@@ -58,4 +58,24 @@ class Hotel extends Model
     {
         return $this->hasMany(Menu::class);
     }
+
+    public function room_service_request(): HasMany
+    {
+        return $this->hasMany(RoomServiceRequest::class);
+    }
+
+    public function food_service_request(): HasMany
+    {
+        return $this->hasMany(FoodServiceRequest::class);
+    }
+
+    public function temp_cart_room(): HasMany
+    {
+        return $this->hasMany(TempCartFoodService::class);
+    }
+
+    public function temp_cart_food(): HasMany
+    {
+        return $this->hasMany(TempCartFoodService::class);
+    }
 }
