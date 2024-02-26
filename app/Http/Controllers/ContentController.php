@@ -417,7 +417,7 @@ class ContentController extends Controller
         $menu = Menu::where('id', intval($menu_id))->first();
 
         $validator = Validator::make($request->all(), [
-            'type' => 'required',
+            // 'type' => 'required',
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
