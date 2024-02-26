@@ -81,7 +81,6 @@ class ContentController extends Controller
             $file_name = str_replace(' ', '', $file_name);
             $path_hotel_photo = asset("uploads/hotel_photo/" . $file_name);
             $request->hotel_photo->move(public_path('uploads/hotel_photo/'), $file_name);
-            // dd($path_hotel_photo);
 
             $file_name = time() . " - " . $request->hotel_qr_code_wifi->getClientOriginalName();
             $file_name = str_replace(' ', '', $file_name);
