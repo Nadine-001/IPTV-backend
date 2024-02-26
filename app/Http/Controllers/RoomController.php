@@ -84,10 +84,12 @@ class RoomController extends Controller
             $services_data = [];
 
             foreach ($services as $service) {
+                $service_id = $service->id;
                 $service_name = $service->name;
                 $service_image = $service->image;
 
                 $services_data[] = [
+                    'service_id' => $service_id,
                     'service_name' => $service_name,
                     'service_image' => $service_image,
                 ];
@@ -99,8 +101,6 @@ class RoomController extends Controller
             ], 400);
         }
 
-        return response()->json([
-            'services_data' => $services_data
-        ]);
+        return response()->json($services_data);
     }
 }

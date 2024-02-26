@@ -6,16 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class RoomService extends Model
+class RoomServiceRequest extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'hotel_id',
-        'name',
-        'image',
+        'television_id',
+        'is_accepted',
     ];
 
     public function hotel(): BelongsTo
@@ -23,13 +22,14 @@ class RoomService extends Model
         return $this->belongsTo(Hotel::class);
     }
 
-    public function room_service_request_detail(): HasOne
+    public function television(): BelongsTo
     {
-        return $this->hasOne(RoomServiceRequestDetail::class);
+        return $this->belongsTo(Television::class);
+
     }
 
-    public function temp_cart_room(): HasMany
+    public function room_service_request_detail(): HasMany
     {
-        return $this->hasMany(TempCartFoodService::class);
+        return $this->hasMany(RoomServiceRequestDetail::class);
     }
 }
