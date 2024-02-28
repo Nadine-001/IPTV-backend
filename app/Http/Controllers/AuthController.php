@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Factory;
 use Kreait\Laravel\Firebase\Facades\Firebase;
@@ -22,6 +25,46 @@ class AuthController extends Controller
 
         $this->firestore = $firebase->createFirestore()
             ->database();
+    }
+
+    public function sign_up(Request $request, $hotel_id) {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+            'role' => 'required',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 406);
+        }
+
+        $email = $request->email;
+        $password = $request->password;
+
+        try {
+            $role = Role::where('role_name', $request->role)->first();
+
+            User::create([
+                'hotel_id' => $hotel_id,
+                'role_id' => $role->id,
+                'email' => $email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            $new_user = $this->auth->createUserWithEmailAndPassword($email, $password);
+            $uid = $new_user->uid;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'sign up failed',
+                'errors' => $th->getMessage()
+            ], 401);
+        }
+
+        return response()->json([
+            'UID' => $uid,
+            'email' => $email,
+            'role' => $request->role,
+        ]);
     }
 
     public function login(Request $request)
