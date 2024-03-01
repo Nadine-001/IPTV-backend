@@ -14,19 +14,20 @@ class GuestController extends Controller
     {
         $televisions = Television::where('hotel_id', $hotel_id)->get();
 
-        $room_number = [];
+        $room_numbers = [];
         foreach ($televisions as $television) {
+            // dd($television);
             $room_id = $television->id;
             $room_number = $television->room_number;
 
-            $room_number[] = [
+            $room_numbers[] = [
                 'room_id' => $room_id,
                 'room_number' => $room_number
             ];
         }
 
         return response()->json([
-            'room_number' => $room_number,
+            'room_numbers' => $room_numbers,
         ]);
     }
 
@@ -34,19 +35,19 @@ class GuestController extends Controller
     {
         $rooms = Room::where('hotel_id', $hotel_id)->get();
 
-        $room_type = [];
+        $room_types = [];
         foreach ($rooms as $room) {
             $room_type_id = $room->id;
             $room_type = $room->type;
 
-            $room_type[] = [
+            $room_types[] = [
                 'room_type_id' => $room_type_id,
                 'room_type' => $room_type
             ];
         }
 
         return response()->json([
-            'room_type' => $room_type,
+            'room_type' => $room_types,
         ]);
     }
 
