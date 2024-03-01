@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hotel;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -82,6 +83,9 @@ class AuthController extends Controller
         $password = $request->password;
 
         try {
+            $admin = User::where('email', $email)->first();
+            $hotel_id = $admin->hotel_id;
+
             $user = $this->auth->signInWithEmailAndPassword($email, $password);
 
             $uid = $user->firebaseUserId();
@@ -97,6 +101,7 @@ class AuthController extends Controller
             'email' => $email,
             'UID' => $uid,
             'token' => $token,
+            'hotel_id' => $hotel_id,
         ]);
     }
 }
