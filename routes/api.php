@@ -60,53 +60,56 @@ Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::clas
 Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 
-// CONTENT ADMIN
-Route::middleware('content_admin')->group(function () {
-    Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
-    Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_name']);
-    Route::post('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about']);
-    Route::post('/hotel_facilities/{hotel_id}', [ContentController::class, 'hotel_facilities_create']);
-    Route::put('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_update']);
-    Route::delete('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_delete']);
-    Route::post('/room_about/{hotel_id}', [ContentController::class, 'room_about_create']);
-    Route::put('/room_about/{room_id}', [ContentController::class, 'room_about_update']);
-    Route::post('/amenities/{hotel_id}', [ContentController::class, 'amenities_create']);
-    Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
-    Route::delete('/amenities/{service_id}', [ContentController::class, 'amenities_delete']);
-    Route::post('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_menu']);
-    Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
-    Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
-    Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
-});
+Route::group(['middleware' => 'firebase'], function () {
 
-// RECEPTIONIST
-Route::middleware('receptionist')->group(function () {
-    Route::get('/room_number/{hotel_id}', [GuestController::class, 'room_number_list']);
-    Route::get('/room_type/{hotel_id}', [GuestController::class, 'room_type_list']);
-    Route::post('/guest/{room_number_id}', [GuestController::class, 'guest']);
-});
+    // CONTENT ADMIN
+    Route::middleware('content_admin')->group(function () {
+        Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
+        Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_name']);
+        Route::post('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about']);
+        Route::post('/hotel_facilities/{hotel_id}', [ContentController::class, 'hotel_facilities_create']);
+        Route::put('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_update']);
+        Route::delete('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_delete']);
+        Route::post('/room_about/{hotel_id}', [ContentController::class, 'room_about_create']);
+        Route::put('/room_about/{room_id}', [ContentController::class, 'room_about_update']);
+        Route::post('/amenities/{hotel_id}', [ContentController::class, 'amenities_create']);
+        Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
+        Route::delete('/amenities/{service_id}', [ContentController::class, 'amenities_delete']);
+        Route::post('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_menu']);
+        Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
+        Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
+        Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
+    });
 
-// SERVICE ADMIN
-Route::middleware('service_admin')->group(function () {
-    Route::get('/room_service_list/{hotel_id}', [ServiceController::class, 'room_service_list']);
-    Route::get('/room_service_detail/{room_service_request_id}', [ServiceController::class, 'room_service_detail']);
-    Route::post('/accept_service_request/{room_service_request_id}', [ServiceController::class, 'accept_service_request']);
-    Route::post('/decline_service_request/{room_service_request_id}', [ServiceController::class, 'decline_service_request']);
-    Route::get('/room_service_history/{hotel_id}', [ServiceController::class, 'room_service_history']);
-    Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
-    Route::get('/food_service_detail/{food_service_request_id}', [ServiceController::class, 'food_service_detail']);
-    Route::post('/accept_food_order/{food_service_request_id}', [ServiceController::class, 'accept_food_order']);
-    Route::post('/decline_food_order/{food_service_request_id}', [ServiceController::class, 'decline_food_order']);
-    Route::get('/food_service_history/{hotel_id}', [ServiceController::class, 'food_service_history']);
-});
+    // RECEPTIONIST
+    Route::middleware('receptionist')->group(function () {
+        Route::get('/room_number/{hotel_id}', [GuestController::class, 'room_number_list']);
+        Route::get('/room_type/{hotel_id}', [GuestController::class, 'room_type_list']);
+        Route::post('/guest/{room_number_id}', [GuestController::class, 'guest']);
+    });
 
-// SUPERADMIN
-Route::middleware('super_admin')->group(function () {
-    Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
-    Route::post('/add_admin', [ClientController::class, 'add_admin']);
-    Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
-});
+    // SERVICE ADMIN
+    Route::middleware('service_admin')->group(function () {
+        Route::get('/room_service_list/{hotel_id}', [ServiceController::class, 'room_service_list']);
+        Route::get('/room_service_detail/{room_service_request_id}', [ServiceController::class, 'room_service_detail']);
+        Route::post('/accept_service_request/{room_service_request_id}', [ServiceController::class, 'accept_service_request']);
+        Route::post('/decline_service_request/{room_service_request_id}', [ServiceController::class, 'decline_service_request']);
+        Route::get('/room_service_history/{hotel_id}', [ServiceController::class, 'room_service_history']);
+        Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
+        Route::get('/food_service_detail/{food_service_request_id}', [ServiceController::class, 'food_service_detail']);
+        Route::post('/accept_food_order/{food_service_request_id}', [ServiceController::class, 'accept_food_order']);
+        Route::post('/decline_food_order/{food_service_request_id}', [ServiceController::class, 'decline_food_order']);
+        Route::get('/food_service_history/{hotel_id}', [ServiceController::class, 'food_service_history']);
+    });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    // SUPERADMIN
+    Route::middleware('super_admin')->group(function () {
+        Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
+        Route::post('/add_admin', [ClientController::class, 'add_admin']);
+        Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
+    });
+
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
