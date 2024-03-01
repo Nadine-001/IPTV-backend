@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hotel;
+use App\Models\Room;
 use App\Models\Television;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -11,12 +12,12 @@ class GuestController extends Controller
 {
     public function room_list($hotel_id)
     {
-        $rooms = Television::where('hotel_id', $hotel_id)->get();
+        $televisions = Television::where('hotel_id', $hotel_id)->get();
 
         $room_list = [];
-        foreach ($rooms as $room) {
-            $room_id = $room->id;
-            $room_number = $room->room_number;
+        foreach ($televisions as $television) {
+            $room_id = $television->id;
+            $room_number = $television->room_number;
 
             $room_list[] = [
                 'room_id' => $room_id,
@@ -24,7 +25,23 @@ class GuestController extends Controller
             ];
         }
 
-        return response()->json($room_list);
+        $rooms = Room::where('hotel_id', $hotel_id)->get();
+
+        $room_types = [];
+        foreach ($rooms as $room) {
+            $room_type_id = $room->id;
+            $room_type = $room->type;
+
+            $room_types[] = [
+                'room_type_id' => $room_type_id,
+                'room_type' => $room_type
+            ];
+        }
+
+        return response()->json([
+            'room_list' => $room_list,
+            'room_types' => $room_types,
+        ]);
     }
 
     public function guest(Request $request, $room_number_id)
