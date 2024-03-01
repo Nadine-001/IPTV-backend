@@ -21,6 +21,7 @@ class Hotel extends Model
         'address',
         'city',
         'phone',
+        'cp',
         'longitude',
         'langitude',
         'logo',
