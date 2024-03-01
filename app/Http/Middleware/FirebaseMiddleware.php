@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
 use Symfony\Component\HttpFoundation\Response;
 
-class ReceptionistMiddleware
+class FirebaseMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,33 +16,21 @@ class ReceptionistMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $response = (object) [];
         $token = $request->bearerToken();
-        $response->token = $token;
 
         $auth = app('firebase.auth');
         try {
-            $verifiedIdToken = $auth->verifyIdToken($token);
+            if ($token == null) {
+                throw new FailedToVerifyToken('token can not be null');
+            }
+
+            $auth->verifyIdToken($token);
+            return $next($request);
         } catch (FailedToVerifyToken $e) {
             return response()->json([
                 'message' => 'invalid token',
                 'error' => $e->getMessage()
-            ]);
+            ], 401);
         }
-        $email = $verifiedIdToken->claims()->get('email');
-
-        $admin = User::where('email', $email)->first();
-        $role_id = $admin->role_id;
-
-        if ($role_id == 2 || $role_id >= 99) {
-            return $next($request);
-        }
-
-        return response()->json(
-            [
-                'error' => 'Access Denied'
-            ],
-            403
-        );
     }
 }
