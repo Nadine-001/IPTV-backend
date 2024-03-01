@@ -105,7 +105,16 @@ Route::group(['middleware' => 'firebase'], function () {
     Route::middleware('super_admin')->group(function () {
         Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
         Route::post('/add_admin', [ClientController::class, 'add_admin']);
-        Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
+        Route::post('/add_television', [ClientController::class, 'add_television']);
+        Route::get('/hotel/{hotel_id}', [ClientController::class, 'hotel_data_list']);
+        Route::get('/hotel_data/{hotel_id}', [ClientController::class, 'hotel_data']);
+        Route::put('/update_hotel/{hotel_id}', [ClientController::class, 'update_hotel']);
+        Route::get('television_data/{hotel_id}', [ClientController::class, 'television_data']);
+        Route::put('update_television/{television_id}', [ClientController::class, 'update_television']);
+        Route::get('admin_list/{hotel_id}', [ClientController::class, 'admin_list']);
+        Route::put('update_admin/{admin_id}', [ClientController::class, 'update_admin']);
+        Route::get('/hotel_list/{hotel_id}', [ClientController::class, 'hotel_list']);
+        Route::get('/television_list/{hotel_id}', [ClientController::class, 'television_list']);
     });
 });
 
