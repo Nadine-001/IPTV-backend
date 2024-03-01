@@ -30,6 +30,7 @@ class ReceptionistMiddleware
                 'error' => $e->getMessage()
             ]);
         }
+        
         $email = $verifiedIdToken->claims()->get('email');
 
         $admin = User::where('email', $email)->first();

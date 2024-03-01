@@ -61,7 +61,6 @@ Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, '
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 
 Route::group(['middleware' => 'firebase'], function () {
-
     // CONTENT ADMIN
     Route::middleware('content_admin')->group(function () {
         Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
@@ -108,8 +107,8 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::post('/add_admin', [ClientController::class, 'add_admin']);
         Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
     });
+});
 
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
-    });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
