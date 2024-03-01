@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/sign_up', [AuthController::class, 'sign_up']);
+Route::post('/login', [AuthController::class, 'login']);
+
 // HOTEL
 Route::get('/home', [HotelController::class, 'home']);
 Route::get('/greeting', [HotelController::class, 'hotel_greeting']);
@@ -78,7 +81,8 @@ Route::middleware('content_admin')->group(function () {
 
 // RECEPTIONIST
 Route::middleware('receptionist')->group(function () {
-    Route::get('/room_list/{hotel_id}', [GuestController::class, 'room_list']);
+    Route::get('/room_number/{hotel_id}', [GuestController::class, 'room_number_list']);
+    Route::get('/room_type/{hotel_id}', [GuestController::class, 'room_type_list']);
     Route::post('/guest/{room_number_id}', [GuestController::class, 'guest']);
 });
 
@@ -98,7 +102,6 @@ Route::middleware('service_admin')->group(function () {
 
 // SUPERADMIN
 Route::middleware('super_admin')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
     Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
     Route::post('/add_admin', [ClientController::class, 'add_admin']);
     Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);

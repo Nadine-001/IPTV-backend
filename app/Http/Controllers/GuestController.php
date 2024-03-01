@@ -10,37 +10,43 @@ use Illuminate\Support\Facades\Validator;
 
 class GuestController extends Controller
 {
-    public function room_list($hotel_id)
+    public function room_number_list($hotel_id)
     {
         $televisions = Television::where('hotel_id', $hotel_id)->get();
 
-        $room_list = [];
+        $room_number = [];
         foreach ($televisions as $television) {
             $room_id = $television->id;
             $room_number = $television->room_number;
 
-            $room_list[] = [
+            $room_number[] = [
                 'room_id' => $room_id,
                 'room_number' => $room_number
             ];
         }
 
+        return response()->json([
+            'room_number' => $room_number,
+        ]);
+    }
+
+    public function room_type_list($hotel_id)
+    {
         $rooms = Room::where('hotel_id', $hotel_id)->get();
 
-        $room_types = [];
+        $room_type = [];
         foreach ($rooms as $room) {
             $room_type_id = $room->id;
             $room_type = $room->type;
 
-            $room_types[] = [
+            $room_type[] = [
                 'room_type_id' => $room_type_id,
                 'room_type' => $room_type
             ];
         }
 
         return response()->json([
-            'room_list' => $room_list,
-            'room_types' => $room_types,
+            'room_type' => $room_type,
         ]);
     }
 
