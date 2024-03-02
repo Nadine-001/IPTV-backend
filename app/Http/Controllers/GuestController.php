@@ -16,7 +16,6 @@ class GuestController extends Controller
 
         $room_numbers = [];
         foreach ($televisions as $television) {
-            // dd($television);
             $room_id = $television->id;
             $room_number = $television->room_number;
 
@@ -51,7 +50,7 @@ class GuestController extends Controller
         ]);
     }
 
-    public function guest(Request $request, $room_number_id)
+    public function add_guest(Request $request, $room_number_id)
     {
         $room = Television::where('id', $room_number_id)->first();
 
@@ -73,11 +72,88 @@ class GuestController extends Controller
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to save guest',
+                'message' => 'failed to save guest data',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json('guest added succesfully');
+        return response()->json('guest data added succesfully');
+    }
+
+    public function guest_list($hotel_id)
+    {
+        $televisions = Television::where('hotel_id', $hotel_id)
+            ->where('guest_name', '!=', null)
+            ->get();
+
+        try {
+            $guest_list = [];
+            foreach ($televisions as $television) {
+                $room_number_id = $television->id;
+                $room_number = $television->room_number;
+                $room_type = $television->room_type;
+                $guest_name = $television->guest_name;
+
+                $guest_list[] = [
+                    'room_number_id' => $room_number_id,
+                    'room_number' => $room_number,
+                    'room_type' => $room_type,
+                    'guest_name' => $guest_name,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get guest list',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'guest_list' => $guest_list
+        ]);
+    }
+
+    public function update_guest(Request $request, $room_number_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'room_type' => 'required',
+            'guest_name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $television = Television::where('id', $room_number_id)->first();
+
+        try {
+            $television->update([
+                'room_type' => $request->room_type,
+                'guest_name' => $request->guest_name,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update guest data',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('guest data updated succesfully');
+    }
+
+    public function delete_guest($room_number_id)
+    {
+        $television = Television::where('id', $room_number_id)->first();
+        $deleted = $television->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                "message" => "failed delete guest data"
+            ], 400);
+        }
+
+        return response()->json([
+            "message" => "guest data deleted successfully"
+        ]);
     }
 }
