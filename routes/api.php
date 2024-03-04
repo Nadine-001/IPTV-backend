@@ -89,7 +89,7 @@ Route::group(['middleware' => 'firebase'], function () {
     Route::middleware('receptionist')->group(function () {
         Route::get('/room_number/{hotel_id}', [GuestController::class, 'room_number_list']);
         Route::get('/room_type/{hotel_id}', [GuestController::class, 'room_type_list']);
-        Route::post('/guest/{room_number_id}', [GuestController::class, 'add_guest']);
+        Route::post('/guest', [GuestController::class, 'add_guest']);
         Route::get('/guest/{hotel_id}', [GuestController::class, 'guest_list']);
         Route::put('/guest/{room_number_id}', [GuestController::class, 'update_guest']);
         Route::delete('/guest/{room_number_id}', [GuestController::class, 'delete_guest']);

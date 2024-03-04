@@ -52,11 +52,10 @@ class GuestController extends Controller
         ]);
     }
 
-    public function add_guest(Request $request, $room_number_id)
+    public function add_guest(Request $request)
     {
-        $room = Television::where('id', $room_number_id)->first();
-
         $validator = Validator::make($request->all(), [
+            'room_number_id' => 'required',
             'room_type' => 'required',
             'guest_name' => 'required',
             'guest_gender' => 'required',
@@ -65,6 +64,8 @@ class GuestController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
+
+        $room = Television::where('id', $request->room_number_id)->first();
 
         try {
             $room->update([
