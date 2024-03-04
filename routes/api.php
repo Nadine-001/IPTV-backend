@@ -63,6 +63,7 @@ Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 Route::group(['middleware' => 'firebase'], function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/change_password', [AuthController::class, 'change_password']);
 
     // CONTENT ADMIN
     Route::middleware('content_admin')->group(function () {

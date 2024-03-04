@@ -132,6 +132,38 @@ class AuthController extends Controller
         ]);
     }
 
+    public function change_password(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 406);
+        }
+        
+        try {
+            $token = $request->bearerToken();
+            $verifiedIdToken = $this->auth->verifyIdToken($token);
+            $email = $verifiedIdToken->claims()->get('email');
+            $user = User::where('email', $email)->first();
+
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            $uid = $verifiedIdToken->claims()->get('sub');
+            $this->auth->changeUserPassword($uid, $request->password);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update password',
+                'errors' => $th->getMessage()
+            ], 401);
+        }
+
+        return response()->json('password updated successfully' );
+    }
+
     public function logout(Request $request)
     {
         try {
