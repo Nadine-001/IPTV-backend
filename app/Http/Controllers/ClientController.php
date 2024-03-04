@@ -14,7 +14,9 @@ use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class ClientController extends Controller
 {
-    protected $auth, $rtdb, $firestore;
+    protected $auth, $rtdb;
+    // $firestore;
+
     public function __construct()
     {
         $this->auth = Firebase::auth();
@@ -25,8 +27,8 @@ class ClientController extends Controller
         $this->rtdb = $firebase->withDatabaseUri(env("FIREBASE_DATABASE_URL"))
             ->createDatabase();
 
-        $this->firestore = $firebase->createFirestore()
-            ->database();
+        // $this->firestore = $firebase->createFirestore()
+        //     ->database();
     }
 
     public function add_hotel(Request $request)
