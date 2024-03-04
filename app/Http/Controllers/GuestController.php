@@ -144,11 +144,17 @@ class GuestController extends Controller
     public function delete_guest($room_number_id)
     {
         $television = Television::where('id', $room_number_id)->first();
-        $deleted = $television->delete();
 
-        if (!$deleted) {
+        try {
+            $television->update([
+                'room_type' => null,
+                'guest_name' => null,
+                'guest_gender' => null,
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
-                "message" => "failed delete guest data"
+                'message' => 'failed to delete guest data',
+                'errors' => $th->getMessage()
             ], 400);
         }
 
