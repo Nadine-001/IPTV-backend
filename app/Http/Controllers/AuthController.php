@@ -110,7 +110,26 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
-        $uid = $this->getUid($request);
+        try {
+            $token = $request->bearerToken();
+            $verifiedIdToken = $this->auth->verifyIdToken($token);
+            $email = $verifiedIdToken->claims()->get('email');
+            $user = User::where('email', $email)->first();
+            $role_id = $user->role_id;
+            $role = Role::where('id', $role_id)->first();
+
+            $role_name = $role->role_name;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get profile',
+                'errors' => $th->getMessage()
+            ], 401);
+        }
+
+        return response()->json([
+            'email' => $email,
+            'role_name' => $role_name,
+        ]);
     }
 
     public function logout(Request $request)
