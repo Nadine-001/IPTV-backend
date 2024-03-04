@@ -12,7 +12,9 @@ class GuestController extends Controller
 {
     public function room_number_list($hotel_id)
     {
-        $televisions = Television::where('hotel_id', $hotel_id)->get();
+        $televisions = Television::where('hotel_id', $hotel_id)
+            ->where('guest_name', null)
+            ->get();
 
         $room_numbers = [];
         foreach ($televisions as $television) {
