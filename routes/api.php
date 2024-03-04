@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/sign_up', [AuthController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot_password', [AuthController::class, 'forgot_password']);
 
 // HOTEL
 Route::get('/home', [HotelController::class, 'home']);

@@ -141,7 +141,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 406);
         }
-        
+
         try {
             $token = $request->bearerToken();
             $verifiedIdToken = $this->auth->verifyIdToken($token);
@@ -161,7 +161,31 @@ class AuthController extends Controller
             ], 401);
         }
 
-        return response()->json('password updated successfully' );
+        return response()->json('password updated successfully');
+    }
+
+    public function forgot_password(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 406);
+        }
+
+        $email = $request->email;
+
+        try {
+            $this->auth->sendPasswordResetLink($email);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'logout failed',
+                'errors' => $th->getMessage()
+            ], 401);
+        }
+
+        return response()->json('email sent');
     }
 
     public function logout(Request $request)
