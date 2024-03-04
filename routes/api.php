@@ -62,7 +62,7 @@ Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 
 Route::group(['middleware' => 'firebase'], function () {
     Route::get('/profile', [AuthController::class, 'profile']);
-    Route::get('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     // CONTENT ADMIN
     Route::middleware('content_admin')->group(function () {
@@ -108,10 +108,10 @@ Route::group(['middleware' => 'firebase'], function () {
     });
 
     // SUPERADMIN
-    Route::middleware('super_admin')->group(function () {
+    // Route::middleware('super_admin')->group(function () {
         Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
         Route::post('/add_admin', [ClientController::class, 'add_admin']);
-        Route::post('/add_television', [ClientController::class, 'add_television']);
+        Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
         Route::get('/hotel/{hotel_id}', [ClientController::class, 'hotel_data_list']);
         Route::get('/hotel_data/{hotel_id}', [ClientController::class, 'hotel_data']);
         Route::put('/update_hotel/{hotel_id}', [ClientController::class, 'update_hotel']);
@@ -121,7 +121,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::put('update_admin/{admin_id}', [ClientController::class, 'update_admin']);
         Route::get('/hotel_list/{hotel_id}', [ClientController::class, 'hotel_list']);
         Route::get('/television_list/{hotel_id}', [ClientController::class, 'television_list']);
-    });
+    // });
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

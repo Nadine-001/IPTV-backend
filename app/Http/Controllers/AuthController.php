@@ -15,7 +15,7 @@ class AuthController extends Controller
 {
     protected $auth, $rtdb;
     // $firestore;
-    
+
     public function __construct()
     {
         $this->auth = Firebase::auth();
@@ -30,7 +30,8 @@ class AuthController extends Controller
         //     ->database();
     }
 
-    public function sign_up(Request $request, $hotel_id) {
+    public function sign_up(Request $request, $hotel_id)
+    {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'role' => 'required',
@@ -105,5 +106,33 @@ class AuthController extends Controller
             'token' => $token,
             'hotel_id' => $hotel_id,
         ]);
+    }
+
+    public function profile(Request $request)
+    {
+        $uid = $this->getUid($request);
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $this->auth->revokeRefreshTokens($this->getUid($request));
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'logout failed',
+                'errors' => $th->getMessage()
+            ], 401);
+        }
+
+        return response()->json('logout success');
+    }
+
+    public function getUid(Request $request)
+    {
+        $token = $request->bearerToken();
+        $verifiedIdToken = $this->auth->verifyIdToken($token);
+        $uid = $verifiedIdToken->claims()->get('sub');
+
+        return $uid;
     }
 }
