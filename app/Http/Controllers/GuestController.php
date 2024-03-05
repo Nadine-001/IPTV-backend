@@ -116,11 +116,35 @@ class GuestController extends Controller
         ]);
     }
 
+    public function guest_data($room_number_id) {
+        $television = Television::where('id', $room_number_id)->first();
+
+        try {
+            $room_number = $television->room_number;
+            $room_type = $television->room_type;
+            $guest_name = $television->guest_name;
+            $guest_gender = $television->guest_gender;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get guest data',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'room_number' => $room_number,
+            'room_type' => $room_type,
+            'guest_name' => $guest_name,
+            'guest_gender' => $guest_gender,
+        ]);
+    }
+
     public function update_guest(Request $request, $room_number_id)
     {
         $validator = Validator::make($request->all(), [
             'room_type' => 'required',
             'guest_name' => 'required',
+            'guest_gender' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -133,6 +157,7 @@ class GuestController extends Controller
             $television->update([
                 'room_type' => $request->room_type,
                 'guest_name' => $request->guest_name,
+                'guest_gender' => $request->guest_gender,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
