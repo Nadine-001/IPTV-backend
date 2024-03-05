@@ -22,7 +22,7 @@ class GuestController extends Controller
             $room_number = $television->room_number;
 
             $room_numbers[] = [
-                'room_id' => $room_id,
+                'room_number_id' => $room_id,
                 'room_number' => $room_number
             ];
         }
