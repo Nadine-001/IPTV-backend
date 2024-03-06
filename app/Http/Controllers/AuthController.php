@@ -135,7 +135,8 @@ class AuthController extends Controller
     public function change_password(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'password' => 'required',
+            'old_password' => 'required',
+            'new_password' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -148,12 +149,17 @@ class AuthController extends Controller
             $email = $verifiedIdToken->claims()->get('email');
             $user = User::where('email', $email)->first();
 
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
+            $old_password = $user->password;
+            if (password_verify($request->old_password, $old_password)) {
+                $user->update([
+                    'password' => Hash::make($request->new_password),
+                ]);
 
-            $uid = $verifiedIdToken->claims()->get('sub');
-            $this->auth->changeUserPassword($uid, $request->password);
+                $uid = $verifiedIdToken->claims()->get('sub');
+                $this->auth->changeUserPassword($uid, $request->new_password);
+            } else {
+                return response()->json('old password does not match');
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to update password',
