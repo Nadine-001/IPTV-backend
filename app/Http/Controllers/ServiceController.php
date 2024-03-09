@@ -24,15 +24,37 @@ class ServiceController extends Controller
 
             foreach ($room_service_request as $service_request) {
                 $television_id = $service_request->television_id;
-                $television = Television::where('id', $television_id)->first(); // first?? get??
+                $television = Television::where('id', $television_id)->first();
 
                 $room_number = $television->room_number;
                 $room_type = $television->room_type;
 
+                $room_service_request = RoomServiceRequest::where('id', $service_request->id)->first();
+                $request_services = RoomServiceRequestDetail::where('room_service_request_id', $room_service_request->id)->get();
+
+                $request_detail = [];
+                foreach ($request_services as $request_service) {
+                    $room_service_id = $request_service->room_service_id;
+                    $room_service = RoomService::where('id', $room_service_id)->first();
+
+                    $service_name = $room_service->name;
+                    $service_image = $room_service->image;
+                    $request_note = $request_service->note;
+                    $request_qty = $request_service->qty;
+
+                    $request_detail[] = [
+                        'service_name' => $service_name,
+                        'service_image' => $service_image,
+                        'request_note' => $request_note,
+                        'request_qty' => $request_qty,
+                    ];
+                }
+
                 $service_request_list[] = [
                     'id' => $service_request->id,
                     'room_number' => $room_number,
-                    'room_type' => $room_type
+                    'room_type' => $room_type,
+                    'request_detail' => $request_detail,
                 ];
             }
         } catch (\Throwable $th) {
@@ -139,7 +161,6 @@ class ServiceController extends Controller
                 $television = Television::where('id', $television_id)->first();
 
                 $room_number = $television->room_number;
-                $room_type = $television->room_type;
 
                 $request_services = RoomServiceRequestDetail::where('room_service_request_id', $service_request->id)->get();
 
@@ -199,10 +220,36 @@ class ServiceController extends Controller
                 $room_number = $television->room_number;
                 $room_type = $television->room_type;
 
+                $food_service_request = FoodServiceRequest::where('id', $service_request->id)->first();
+                $food_services = FoodServiceRequestDetail::where('food_service_request_id', $food_service_request->id)->get();
+
+                $order_detail = [];
+                foreach ($food_services as $food_service) {
+                    $menu_id = $food_service->menu_id;
+                    $menu = Menu::where('id', $menu_id)->first();
+
+                    $menu_name = $menu->name;
+                    $menu_description = $menu->description;
+                    $menu_price = $menu->price;
+                    $menu_image = $menu->image;
+                    $order_qty = $food_service->qty;
+                    $order_total = $food_service_request->total;
+
+                    $order_detail[] = [
+                        'menu_name' => $menu_name,
+                        'menu_image' => $menu_image,
+                        'menu_description' => $menu_description,
+                        'menu_price' => $menu_price,
+                        'order_qty' => $order_qty,
+                    ];
+                }
+
                 $food_request_list[] = [
                     'id' => $service_request->id,
                     'room_number' => $room_number,
-                    'room_type' => $room_type
+                    'room_type' => $room_type,
+                    'order_detail' => $order_detail,
+                    'order_total' => $order_total,
                 ];
             }
         } catch (\Throwable $th) {
