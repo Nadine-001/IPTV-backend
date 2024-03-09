@@ -29,7 +29,7 @@ class ServiceController extends Controller
                 $room_number = $television->room_number;
                 $room_type = $television->room_type;
 
-                $service_request_list = [
+                $service_request_list[] = [
                     'id' => $service_request->id,
                     'room_number' => $room_number,
                     'room_type' => $room_type
@@ -42,7 +42,9 @@ class ServiceController extends Controller
             ], 400);
         }
 
-        return response()->json($service_request_list);
+        return response()->json([
+            'service_request_list' => $service_request_list
+        ]);
     }
 
     public function room_service_detail($room_service_request_id)
@@ -154,7 +156,7 @@ class ServiceController extends Controller
                     $note = $request_service->note;
 
                     $request_detail[] = [
-                        'menu_id' => $room_service_id,
+                        'room_service_id' => $room_service_id,
                         'service_name' => $service_name,
                         'service_image' => $service_image,
                         'quantity' => $quantity,
@@ -165,7 +167,6 @@ class ServiceController extends Controller
                 $service_history_list[] = [
                     'id' => $service_request->id,
                     'room_number' => $room_number,
-                    'room_type' => $room_type,
                     'service_detail' => $request_detail,
                     'is_accepted' => $is_accepted,
                 ];
@@ -211,7 +212,9 @@ class ServiceController extends Controller
             ], 400);
         }
 
-        return response()->json($food_request_list);
+        return response()->json([
+            'food_request_list' => $food_request_list
+        ]);
     }
 
     public function food_service_detail($food_service_request_id)
@@ -305,6 +308,7 @@ class ServiceController extends Controller
 
             foreach ($food_order_request as $order_request) {
                 $is_accepted = $order_request->is_accepted;
+                $total = $order_request->total;
 
                 $television_id = $order_request->television_id;
                 $television = Television::where('id', $television_id)->first();
@@ -324,7 +328,6 @@ class ServiceController extends Controller
                     $menu_price = $menu->price;
                     $menu_image = $menu->image;
                     $quantity = $food_order->qty;
-                    $total = $food_order->total;
 
                     $order_detail[] = [
                         'menu_id' => $menu_id,
@@ -332,7 +335,6 @@ class ServiceController extends Controller
                         'menu_price' => $menu_price,
                         'menu_image' => $menu_image,
                         'quantity' => $quantity,
-                        'total' => $total,
                     ];
                 }
 
@@ -342,6 +344,7 @@ class ServiceController extends Controller
                     'room_type' => $room_type,
                     'order_detail' => $order_detail,
                     'is_accepted' => $is_accepted,
+                    'total' => $total,
                 ];
             }
         } catch (\Throwable $th) {
