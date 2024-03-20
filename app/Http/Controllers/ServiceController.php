@@ -88,6 +88,7 @@ class ServiceController extends Controller
                 $request_qty = $request_service->qty;
 
                 $request_list[] = [
+                    'service_id' => $room_service_id,
                     'service_name' => $service_name,
                     'service_image' => $service_image,
                     'request_note' => $request_note,
@@ -286,6 +287,7 @@ class ServiceController extends Controller
                 $request_total = $food_service_request->total;
 
                 $order_list[] = [
+                    'menu_id' => $menu_id,
                     'menu_name' => $menu_name,
                     'menu_image' => $menu_image,
                     'menu_description' => $menu_description,
