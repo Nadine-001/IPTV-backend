@@ -74,12 +74,19 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::post('/hotel_facilities/{hotel_id}', [ContentController::class, 'hotel_facilities_create']);
         Route::put('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_update']);
         Route::delete('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_delete']);
-        Route::post('/room_about/{hotel_id}', [ContentController::class, 'room_about_create']);
-        Route::put('/room_about/{room_id}', [ContentController::class, 'room_about_update']);
+        Route::post('/room_type/{hotel_id}', [ContentController::class, 'room_type_create']);
+        Route::get('/room_type_list/{hotel_id}', [ContentController::class, 'room_type_list']);
+        Route::get('/room_type/{room_id}', [ContentController::class, 'room_type_detail']);
+        Route::put('/room_type/{room_id}', [ContentController::class, 'room_type_update']);
+        Route::delete('/room_type/{room_id}', [ContentController::class, 'room_type_delete']);
         Route::post('/amenities/{hotel_id}', [ContentController::class, 'amenities_create']);
         Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
         Route::delete('/amenities/{service_id}', [ContentController::class, 'amenities_delete']);
         Route::post('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_menu']);
+        Route::post('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_create']);
+        Route::get('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_list']);
+        Route::put('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_update']);
+        Route::delete('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_delete']);
         Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
         Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
@@ -111,7 +118,7 @@ Route::group(['middleware' => 'firebase'], function () {
     });
 
     // SUPERADMIN
-    // Route::middleware('super_admin')->group(function () {
+    Route::middleware('super_admin')->group(function () {
         Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
         Route::post('/add_admin', [ClientController::class, 'add_admin']);
         Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
@@ -124,7 +131,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::put('update_admin/{admin_id}', [ClientController::class, 'update_admin']);
         Route::get('/hotel_list/{hotel_id}', [ClientController::class, 'hotel_list']);
         Route::get('/television_list/{hotel_id}', [ClientController::class, 'television_list']);
-    // });
+    });
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
