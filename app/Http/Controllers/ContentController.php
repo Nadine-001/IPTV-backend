@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Hotel;
 use App\Models\HotelFacilities;
 use App\Models\Menu;
+use App\Models\MenuType;
 use App\Models\Room;
 use App\Models\RoomService;
 use Illuminate\Http\Request;
@@ -187,7 +188,7 @@ class ContentController extends Controller
 
         if (!$deleted) {
             return response()->json([
-                "message" => "failed delete hotel facility"
+                "message" => "failed to delete hotel facility"
             ], 400);
         }
 
@@ -196,7 +197,7 @@ class ContentController extends Controller
         ]);
     }
 
-    public function room_about_create(Request $request, $hotel_id)
+    public function room_type_create(Request $request, $hotel_id)
     {
         $validator = Validator::make($request->all(), [
             'type' => 'required',
@@ -232,11 +233,64 @@ class ContentController extends Controller
         return response()->json('room about added succesfully');
     }
 
-    public function room_about_update(Request $request, $room_id)
+    public function room_type_list($hotel_id)
+    {
+        $rooms = Room::where('hotel_id', $hotel_id)->get();
+
+        try {
+            $room_type = [];
+            foreach ($rooms as $room) {
+                $type = $room->type;
+                $image = $room->image;
+
+                $room_type[] = [
+                    'id' => $room->id,
+                    'type' => $type,
+                    'image' => $image,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get room type',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'room_type' => $room_type
+        ]);
+    }
+
+    public function room_type_detail($room_id)
+    {
+        $room = Room::where('id', $room_id)->first();
+
+        try {
+            $type = $room->type;
+            $facility = $room->facility;
+            $description = $room->description;
+            $image = $room->image;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get room type',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'type' => $type,
+            'facility' => $facility,
+            'description' => $description,
+            'image' => $image,
+        ]);
+    }
+
+    public function room_type_update(Request $request, $room_id)
     {
         $room = Room::where('id', $room_id)->first();
 
         $validator = Validator::make($request->all(), [
+            'type' => 'required',
             'facility' => 'required',
             'description' => 'required',
             'image' => 'required',
@@ -253,6 +307,7 @@ class ContentController extends Controller
             $request->image->move(public_path('uploads/about/'), $file_name);
 
             $room->update([
+                'type' => $request->type,
                 'facility' => $request->facility,
                 'description' => $request->description,
                 'image' => $path_image,
@@ -265,6 +320,22 @@ class ContentController extends Controller
         }
 
         return response()->json('room about updated succesfully');
+    }
+
+    public function room_type_delete($room_id)
+    {
+        $room = Room::where('id', $room_id)->first();
+        $deleted = $room->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                "message" => "failed to delete room type"
+            ], 400);
+        }
+
+        return response()->json([
+            "message" => "room type deleted successfully"
+        ]);
     }
 
     public function amenities_create(Request $request, $hotel_id)
@@ -339,7 +410,7 @@ class ContentController extends Controller
 
         if (!$deleted) {
             return response()->json([
-                "message" => "failed delete room service"
+                "message" => "failed to delete room service"
             ], 400);
         }
 
@@ -372,6 +443,115 @@ class ContentController extends Controller
         }
 
         return response()->json('ads lips menu added succesfully');
+    }
+
+    public function menu_type_create(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/menu_type/" . $file_name);
+            $request->image->move(public_path('uploads/menu_type/'), $file_name);
+
+            MenuType::create([
+                'hotel_id' => $hotel_id,
+                'type' => $request->type,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save menu type',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('menu type added succesfully');
+    }
+
+    public function menu_type_list($hotel_id)
+    {
+        $menu_types = MenuType::where('hotel_id', $hotel_id)->get();
+
+        try {
+            $menu_type = [];
+            foreach ($menu_types as $types) {
+                $type = $types->type;
+                $image = $types->image;
+
+                $menu_type[] = [
+                    'id' => $types->id,
+                    'type' => $type,
+                    'image' => $image,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get menu type',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'menu_type' => $menu_type
+        ]);
+    }
+
+    public function menu_type_update(Request $request, $menu_type_id)
+    {
+        $menu_types = MenuType::where('id', $menu_type_id)->first();
+
+        $validator = Validator::make($request->all(), [
+            'type' => 'required',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+
+        try {
+            $file_name = time() . " - " . $request->image->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_image = asset("uploads/menu_type/" . $file_name);
+            $request->image->move(public_path('uploads/menu_type/'), $file_name);
+
+            $menu_types->update([
+                'type' => $request->type,
+                'image' => $path_image,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update menu type',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('menu type updated succesfully');
+    }
+
+    public function menu_type_delete($menu_type_id)
+    {
+        $menu_types = MenuType::where('id', $menu_type_id)->first();
+        $deleted = $menu_types->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                "message" => "failed to delete menu type"
+            ], 400);
+        }
+
+        return response()->json([
+            "message" => "menu type deleted successfully"
+        ]);
     }
 
     public function menu_create(Request $request, $hotel_id)
@@ -457,7 +637,7 @@ class ContentController extends Controller
 
         if (!$deleted) {
             return response()->json([
-                "message" => "failed delete menu"
+                "message" => "failed to delete menu"
             ], 400);
         }
 
