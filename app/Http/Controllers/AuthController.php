@@ -92,6 +92,7 @@ class AuthController extends Controller
 
             $uid = $user->firebaseUserId();
             $token = $user->idToken();
+            $role_id = $admin->role->id;
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'login failed',
@@ -104,6 +105,7 @@ class AuthController extends Controller
             'UID' => $uid,
             'token' => $token,
             'hotel_id' => $hotel_id,
+            'role_id' => $role_id,
         ]);
     }
 
