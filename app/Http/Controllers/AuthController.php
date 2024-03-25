@@ -30,7 +30,7 @@ class AuthController extends Controller
         //     ->database();
     }
 
-    public function sign_up(Request $request, $hotel_id)
+    public function sign_up(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
@@ -49,7 +49,6 @@ class AuthController extends Controller
             $role = Role::where('role_name', $request->role)->first();
 
             User::create([
-                'hotel_id' => $hotel_id,
                 'role_id' => $role->id,
                 'email' => $email,
                 'password' => Hash::make($request->password),
