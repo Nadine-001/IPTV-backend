@@ -69,26 +69,39 @@ Route::group(['middleware' => 'firebase'], function () {
     // CONTENT ADMIN
     Route::middleware('content_admin')->group(function () {
         Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
-        Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_name']);
+        Route::get('/greeting/{hotel_id}', [ContentController::class, 'greeting_content']);
+        Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about_data']);
         Route::post('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about']);
+        Route::post('/hotel_photo/{hotel_id}', [ContentController::class, 'hotel_photo']);
+        Route::post('/hotel_wifi/{hotel_id}', [ContentController::class, 'hotel_qr_code_wifi']);
+        Route::post('/hotel_payment/{hotel_id}', [ContentController::class, 'hotel_qr_code_payment']);
         Route::post('/hotel_facilities/{hotel_id}', [ContentController::class, 'hotel_facilities_create']);
+        Route::get('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_data']);
         Route::put('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_update']);
+        Route::put('/facility_image/{facility_id}', [ContentController::class, 'update_facility_image']);
         Route::delete('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_delete']);
         Route::post('/room_type/{hotel_id}', [ContentController::class, 'room_type_create']);
         Route::get('/room_type_list/{hotel_id}', [ContentController::class, 'room_type_list']);
         Route::get('/room_type/{room_id}', [ContentController::class, 'room_type_detail']);
         Route::put('/room_type/{room_id}', [ContentController::class, 'room_type_update']);
+        Route::put('/room_type_image/{room_id}', [ContentController::class, 'update_room_image']);
         Route::delete('/room_type/{room_id}', [ContentController::class, 'room_type_delete']);
         Route::post('/amenities/{hotel_id}', [ContentController::class, 'amenities_create']);
+        Route::get('/amenities/{service_id}', [ContentController::class, 'amenities_data']);
         Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
+        Route::put('/amenity_image/{service_id}', [ContentController::class, 'update_amenity_image']);
         Route::delete('/amenities/{service_id}', [ContentController::class, 'amenities_delete']);
         Route::post('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_menu']);
+        Route::get('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_content']);
         Route::post('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_create']);
         Route::get('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_list']);
         Route::put('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_update']);
+        Route::put('/menu_type_image/{hotel_id}', [ContentController::class, 'update_menu_type_image']);
         Route::delete('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_delete']);
         Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
+        Route::get('/menu/{menu_id}', [ContentController::class, 'menu_data']);
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
+        Route::put('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
         Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
     });
 
@@ -120,16 +133,19 @@ Route::group(['middleware' => 'firebase'], function () {
     // SUPERADMIN
     Route::middleware('super_admin')->group(function () {
         Route::post('/add_hotel', [ClientController::class, 'add_hotel']);
-        Route::post('/add_admin', [ClientController::class, 'add_admin']);
+        Route::post('/add_admin/{hotel_id}', [ClientController::class, 'add_admin']);
         Route::post('/add_television/{hotel_id}', [ClientController::class, 'add_television']);
-        Route::get('/hotel/{hotel_id}', [ClientController::class, 'hotel_data_list']);
+        Route::get('/hotel', [ClientController::class, 'hotel_data_list']);
         Route::get('/hotel_data/{hotel_id}', [ClientController::class, 'hotel_data']);
         Route::put('/update_hotel/{hotel_id}', [ClientController::class, 'update_hotel']);
+        Route::put('/logo/{hotel_id}', [ClientController::class, 'update_hotel_logo']);
         Route::get('television_data/{hotel_id}', [ClientController::class, 'television_data']);
+        Route::get('get_television/{television_id}', [ClientController::class, 'get_television']);
         Route::put('update_television/{television_id}', [ClientController::class, 'update_television']);
         Route::get('admin_list/{hotel_id}', [ClientController::class, 'admin_list']);
+        Route::get('admin_data/{admin_id}', [ClientController::class, 'admin_data']);
         Route::put('update_admin/{admin_id}', [ClientController::class, 'update_admin']);
-        Route::get('/hotel_list/{hotel_id}', [ClientController::class, 'hotel_list']);
+        Route::get('/hotel_list', [ClientController::class, 'hotel_list']);
         Route::get('/television_list/{hotel_id}', [ClientController::class, 'television_list']);
     });
 });
