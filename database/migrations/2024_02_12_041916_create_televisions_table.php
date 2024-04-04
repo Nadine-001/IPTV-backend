@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('mac_address');
             $table->string('guest_name')->nullable();
             $table->string('guest_gender')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
