@@ -52,11 +52,12 @@ class ClientController extends Controller
             $path_logo = asset("uploads/hotels/" . $file_name);
             $request->logo->move(public_path('uploads/hotels/'), $file_name);
 
-            Hotel::create([
+            $hotel = Hotel::create([
                 'name' => $request->name,
                 'address' => $request->address,
                 'city' => $request->city,
                 'phone' => $request->phone,
+                'cp' => $request->contact_person,
                 'logo' => $path_logo,
             ]);
         } catch (\Throwable $th) {
@@ -66,10 +67,12 @@ class ClientController extends Controller
             ], 400);
         }
 
-        return response()->json('hotel added succesfully');
+        return response()->json([
+            'hotel_id' => $hotel->id
+        ]);
     }
 
-    public function add_admin(Request $request)
+    public function add_admin(Request $request, $hotel_id)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required',
@@ -85,12 +88,6 @@ class ClientController extends Controller
         $password = $request->password;
 
         try {
-            $hotel_id = null;
-            if ($request->hotel_name) {
-                $hotel = Hotel::where('name', $request->hotel_name)->first();
-                $hotel_id = $hotel->id;
-            }
-
             $role = Role::where('role_name', $request->role)->first();
 
             User::create([
@@ -143,27 +140,38 @@ class ClientController extends Controller
         return response()->json('mac address added succesfully');
     }
 
-    public function hotel_data_list($hotel_id)
+    public function hotel_data_list()
     {
-        $hotel = Hotel::where('id', $hotel_id)->first();
-
-        $hotel_name = $hotel->name;
-        $hotel_city = $hotel->city;
-
-        $users = User::where('hotel_id', $hotel_id)->get();
+        $hotels = Hotel::all();
 
         try {
-            $admin_list = [];
-            foreach ($users as $user) {
-                $admin_email = $user->email;
-                $role_id = $user->role_id;
+            $hotels_data = [];
 
-                $role = Role::where('id', $role_id)->first();
-                $admin_role = $role->role_name;
+            foreach ($hotels as $hotel) {
+                $hotel_name = $hotel->name;
+                $hotel_city = $hotel->city;
 
-                $admin_list[] = [
-                    'admin_email' => $admin_email,
-                    'admin_role' => $admin_role,
+                $users = $hotel->user;
+
+                $admin_list = [];
+                foreach ($users as $user) {
+                    $admin_email = $user->email;
+                    $role_id = $user->role_id;
+
+                    $role = Role::where('id', $role_id)->first();
+                    $admin_role = $role->role_name;
+
+                    $admin_list[] = [
+                        'admin_email' => $admin_email,
+                        'admin_role' => $admin_role,
+                    ];
+                }
+
+                $hotels_data[] = [
+                    'hotel_id' => $hotel->id,
+                    'hotel_name' => $hotel_name,
+                    'hotel_city' => $hotel_city,
+                    'admin_list' => $admin_list,
                 ];
             }
         } catch (\Throwable $th) {
@@ -174,9 +182,7 @@ class ClientController extends Controller
         }
 
         return response()->json([
-            'hotel_name' => $hotel_name,
-            'hotel_city' => $hotel_city,
-            'admin_list' => $admin_list,
+            'hotels_data' => $hotels_data
         ]);
     }
 
@@ -191,6 +197,7 @@ class ClientController extends Controller
             $hotel_logo = $hotel->logo;
             $hotel_phone = $hotel->phone;
             $hotel_cp = $hotel->cp;
+            $hotel_status = $hotel->is_active;
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get hotel data',
@@ -199,12 +206,14 @@ class ClientController extends Controller
         }
 
         return response()->json([
+            'hotel_id' => $hotel_id,
             'hotel_name' => $hotel_name,
             'hotel_address' => $hotel_address,
             'hotel_city' => $hotel_city,
             'hotel_phone' => $hotel_phone,
             'hotel_cp' => $hotel_cp,
             'hotel_logo' => $hotel_logo,
+            'hotel_status' => $hotel_status,
         ]);
     }
 
@@ -216,7 +225,37 @@ class ClientController extends Controller
             'city' => 'required',
             'phone' => 'required',
             'contact_person' => 'required',
-            'logo' => 'required',
+            'status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 406);
+        }
+
+        $hotel = Hotel::where('id', $hotel_id)->first();
+
+        try {
+            $hotel->update([
+                'name' => $request->name,
+                'address' => $request->address,
+                'city' => $request->city,
+                'phone' => $request->phone,
+                'cp' => $request->contact_person,
+                'is_active' => $request->status,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update hotel data',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('hotel data updated successfully');
+    }
+
+    public function update_hotel_logo(Request $request, $hotel_id) {
+        $validator = Validator::make($request->all(), [
+            'logo' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -232,21 +271,16 @@ class ClientController extends Controller
             $request->logo->move(public_path('uploads/hotels/'), $file_name);
 
             $hotel->update([
-                'name' => $request->name,
-                'address' => $request->address,
-                'city' => $request->city,
-                'phone' => $request->phone,
-                'cp' => $request->contact_person,
                 'logo' => $path_logo,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to update hotel data',
+                'message' => 'failed to update hotel logo',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json('hotel data updated successfully');
+        return response()->json('hotel logo updated successfully');
     }
 
     public function television_data($hotel_id)
@@ -275,7 +309,32 @@ class ClientController extends Controller
             ], 400);
         }
 
-        return response()->json($mac_address_list);
+        return response()->json([
+            'mac_address_list' => $mac_address_list
+        ]);
+    }
+
+    public function get_television(Request $request, $television_id) {
+        try {
+            $television = Television::where('id', $television_id)->first();
+
+            $room_number = $television->room_number;
+            $mac_address = $television->mac_address;
+            $status = $television->is_active;
+
+            $mac_addresses = explode(',', $mac_address);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get television data',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'room_number' => $room_number,
+            'mac_addresses' => $mac_addresses,
+            'status' => $status,
+        ]);
     }
 
     public function update_television(Request $request, $television_id)
@@ -283,6 +342,7 @@ class ClientController extends Controller
         $validator = Validator::make($request->all(), [
             'room_number' => 'required',
             'mac_address' => 'required',
+            'status' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -295,10 +355,11 @@ class ClientController extends Controller
             $television->update([
                 'room_number' => $request->room_number,
                 'mac_address' => $request->mac_address,
+                'is_active' => $request->status,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to add mac address',
+                'message' => 'failed to update television data',
                 'errors' => $th->getMessage()
             ], 400);
         }
@@ -315,11 +376,13 @@ class ClientController extends Controller
             foreach ($users as $user) {
                 $admin_id = $user->id;
                 $admin_email = $user->email;
-                $admin_password = $user->password;
+                $admin_role = $user->role->role_name;
+                // $admin_password = $user->password;
 
                 $admin_list[] = [
                     'admin_id' => $admin_id,
                     'admin_email' => $admin_email,
+                    'admin_role' => $admin_role,
                     // 'admin_password' => $admin_password,
                 ];
             }
@@ -330,7 +393,28 @@ class ClientController extends Controller
             ], 400);
         }
 
-        return response()->json($admin_list);
+        return response()->json([
+            'admin_list' => $admin_list
+        ]);
+    }
+
+    public function admin_data(Request $request, $admin_id) {
+        $user = User::where('id', $admin_id)->first();
+        
+        try {
+            $admin_email = $user->email;
+            $admin_role = $user->role->role_name;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to update admin data',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'admin_email' => $admin_email,
+            'admin_role' => $admin_role,
+        ]);
     }
 
     public function update_admin(Request $request, $admin_id)
@@ -339,7 +423,7 @@ class ClientController extends Controller
 
         try {
             $user->update([
-                'email' => $request->admin['email'],
+                'email' => $request->email,
                 // 'password' => $request->admin['password'],
             ]);
         } catch (\Throwable $th) {
@@ -366,17 +450,19 @@ class ClientController extends Controller
 
                 if (!isset($hotel_list[$hotel_city])) {
                     $hotel_list[$hotel_city] = [
-                        'hotel_id' => $hotel_id,
                         'hotel_city' => $hotel_city,
                         'hotels' => []
                     ];
                 }
-
+                
                 $hotel_list[$hotel_city]['hotels'][] = [
+                    'hotel_id' => $hotel_id,
                     'hotel_name' => $hotel_name,
                     'hotel_logo' => $hotel_logo,
                 ];
             }
+
+            $hotel_list = array_values($hotel_list);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get hotel list',
@@ -384,7 +470,9 @@ class ClientController extends Controller
             ], 400);
         }
 
-        return response()->json($hotel_list);
+        return response()->json([
+            'hotel_list' => $hotel_list
+        ]);
     }
 
     public function television_list($hotel_id)
@@ -411,6 +499,8 @@ class ClientController extends Controller
             ], 400);
         }
 
-        return response()->json($mac_address_list);
+        return response()->json([
+            'mac_address_list' => $mac_address_list
+        ]);
     }
 }
