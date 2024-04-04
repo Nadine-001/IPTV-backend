@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('order_food_intro')->nullable();
             $table->string('qr_code_payment')->nullable();
             $table->string('qr_code_wifi')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

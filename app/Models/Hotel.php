@@ -28,6 +28,7 @@ class Hotel extends Model
         'order_food_intro',
         'qr_code_payment',
         'qr_code_wifi',
+        'is_active',
     ];
 
     public function user(): HasMany
