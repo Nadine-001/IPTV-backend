@@ -20,7 +20,7 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'greeting' => 'required'
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
@@ -43,7 +43,7 @@ class ContentController extends Controller
 
     public function greeting_content($hotel_id) {
         $hotel = Hotel::where('id', intval($hotel_id))->first();
-    
+
         try {
             $hotel_greeting = $hotel->greeting;
         } catch (\Throwable $th) {
@@ -248,7 +248,7 @@ class ContentController extends Controller
 
     public function hotel_facilities_data(Request $request, $facility_id) {
         $facility = HotelFacilities::where('id', $facility_id)->first();
-        
+
         try {
             $facility_id = $facility->id;
             $facility_name = $facility->name;
@@ -275,13 +275,13 @@ class ContentController extends Controller
             'name' => 'required',
             'description' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
 
         $facility = HotelFacilities::where('id', $facility_id)->first();
-        
+
         try {
             $facility->update([
                 'name' => $request->name,
@@ -301,7 +301,7 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
@@ -438,11 +438,11 @@ class ContentController extends Controller
             'facility' => 'required',
             'description' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
-        
+
         $room = Room::where('id', $room_id)->first();
 
         try {
@@ -465,11 +465,11 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
-        
+
         $room = Room::where('id', $room_id)->first();
 
         try {
@@ -541,7 +541,7 @@ class ContentController extends Controller
 
     public function amenities_data($service_id) {
         $service = RoomService::where('id', intval($service_id))->first();
-        
+
         try {
             $service_id = $service->id;
             $service_name = $service->name;
@@ -565,7 +565,7 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
@@ -575,7 +575,6 @@ class ContentController extends Controller
         try {
             $service->update([
                 'name' => $request->name,
-                'image' => $path_image,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -591,7 +590,7 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
@@ -741,7 +740,7 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'type' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
@@ -766,11 +765,11 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
-        
+
         $menu_types = MenuType::where('id', $menu_type_id)->first();
 
         try {
@@ -879,7 +878,7 @@ class ContentController extends Controller
             'description' => 'required',
             'price' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
@@ -906,11 +905,11 @@ class ContentController extends Controller
         $validator = Validator::make($request->all(), [
             'image' => 'required',
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
-        
+
         $menu = Menu::where('id', intval($menu_id))->first();
 
         try {
