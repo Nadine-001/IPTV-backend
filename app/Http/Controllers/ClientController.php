@@ -253,7 +253,8 @@ class ClientController extends Controller
         return response()->json('hotel data updated successfully');
     }
 
-    public function update_hotel_logo(Request $request, $hotel_id) {
+    public function update_hotel_logo(Request $request, $hotel_id)
+    {
         $validator = Validator::make($request->all(), [
             'logo' => 'required'
         ]);
@@ -314,7 +315,8 @@ class ClientController extends Controller
         ]);
     }
 
-    public function get_television(Request $request, $television_id) {
+    public function get_television(Request $request, $television_id)
+    {
         try {
             $television = Television::where('id', $television_id)->first();
 
@@ -398,9 +400,10 @@ class ClientController extends Controller
         ]);
     }
 
-    public function admin_data(Request $request, $admin_id) {
+    public function admin_data(Request $request, $admin_id)
+    {
         $user = User::where('id', $admin_id)->first();
-        
+
         try {
             $admin_email = $user->email;
             $admin_role = $user->role->role_name;
@@ -438,7 +441,7 @@ class ClientController extends Controller
 
     public function hotel_list()
     {
-        $hotels = Hotel::all();
+        $hotels = Hotel::where('is_active', 1)->get();
 
         try {
             $hotel_list = [];
@@ -454,7 +457,7 @@ class ClientController extends Controller
                         'hotels' => []
                     ];
                 }
-                
+
                 $hotel_list[$hotel_city]['hotels'][] = [
                     'hotel_id' => $hotel_id,
                     'hotel_name' => $hotel_name,
@@ -477,7 +480,9 @@ class ClientController extends Controller
 
     public function television_list($hotel_id)
     {
-        $televisions = Television::where('hotel_id', $hotel_id)->get();
+        $televisions = Television::where('hotel_id', $hotel_id)
+            ->where('is_active', 1)
+            ->get();
 
         try {
             $mac_address_list = [];
