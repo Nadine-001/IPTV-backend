@@ -130,11 +130,11 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
-            $hotel = Hotel::where('id', intval($hotel_id))->first();
+            $hotel = Hotel::where('id', $hotel_id)->first();
 
             $file_name = time() . " - " . $request->hotel_photo->getClientOriginalName();
             $file_name = str_replace(' ', '', $file_name);
@@ -161,11 +161,11 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
-            $hotel = Hotel::where('id', intval($hotel_id))->first();
+            $hotel = Hotel::where('id', $hotel_id)->first();
 
             $file_name = time() . " - " . $request->hotel_qr_code_wifi->getClientOriginalName();
             $file_name = str_replace(' ', '', $file_name);
@@ -192,11 +192,11 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
-            $hotel = Hotel::where('id', intval($hotel_id))->first();
+            $hotel = Hotel::where('id', $hotel_id)->first();
 
             $file_name = time() . " - " . $request->hotel_qr_code_payment->getClientOriginalName();
             $file_name = str_replace(' ', '', $file_name);
