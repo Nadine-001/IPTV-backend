@@ -39,7 +39,6 @@ class ClientController extends Controller
             'city' => 'required',
             'phone' => 'required',
             'contact_person' => 'required',
-            'logo' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -47,18 +46,12 @@ class ClientController extends Controller
         }
 
         try {
-            $file_name = time() . " - " . $request->logo->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_logo = asset("uploads/hotels/" . $file_name);
-            $request->logo->move(public_path('uploads/hotels/'), $file_name);
-
             $hotel = Hotel::create([
                 'name' => $request->name,
                 'address' => $request->address,
                 'city' => $request->city,
                 'phone' => $request->phone,
                 'cp' => $request->contact_person,
-                'logo' => $path_logo,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
