@@ -243,6 +243,37 @@ class ContentController extends Controller
         return response()->json('hotel facilities added succesfully');
     }
 
+    public function hotel_facilities_list($hotel_id)
+    {
+        try {
+            $facilities = HotelFacilities::where('hotel_id', $hotel_id)->get();
+
+            $facility_data = [];
+            foreach ($facilities as $facility) {
+                $facility_id = $facility->id;
+                $facility_name = $facility->name;
+                $facility_description = $facility->description;
+                $facility_image = $facility->image;
+
+                $facility_data[] = [
+                    'facility_id' => $facility_id,
+                    'facility_name' => $facility_name,
+                    'facility_description' => $facility_description,
+                    'facility_image' => $facility_image,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get hotel facilities',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'facility_data' => $facility_data
+        ]);
+    }
+
     public function hotel_facilities_data(Request $request, $facility_id)
     {
         $facility = HotelFacilities::where('id', $facility_id)->first();
@@ -348,7 +379,6 @@ class ContentController extends Controller
             'type' => 'required',
             'facility' => 'required',
             'description' => 'required',
-            'image' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -356,17 +386,11 @@ class ContentController extends Controller
         }
 
         try {
-            $file_name = time() . " - " . $request->image->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_image = asset("uploads/about/" . $file_name);
-            $request->image->move(public_path('uploads/about/'), $file_name);
-
             Room::create([
                 'hotel_id' => $hotel_id,
                 'type' => $request->type,
                 'facility' => $request->facility,
                 'description' => $request->description,
-                'image' => $path_image,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -511,7 +535,6 @@ class ContentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'image' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -519,15 +542,9 @@ class ContentController extends Controller
         }
 
         try {
-            $file_name = time() . " - " . $request->image->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_image = asset("uploads/room_services/" . $file_name);
-            $request->image->move(public_path('uploads/room_services/'), $file_name);
-
             RoomService::create([
                 'hotel_id' => $hotel_id,
                 'name' => $request->name,
-                'image' => $path_image,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -539,9 +556,38 @@ class ContentController extends Controller
         return response()->json('amenities added succesfully');
     }
 
+    public function amenities_list($hotel_id)
+    {
+        try {
+            $services = RoomService::where('hotel_id', $hotel_id)->get();
+
+            $service_list = [];
+            foreach ($services as $service) {
+                $service_id = $service->id;
+                $service_name = $service->name;
+                $service_image = $service->image;
+
+                $service_list[] = [
+                    'service_id' => $service_id,
+                    'service_name' => $service_name,
+                    'service_image' => $service_image,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save amenities',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'service_list' => $service_list
+        ]);
+    }
+
     public function amenities_data($service_id)
     {
-        $service = RoomService::where('id', intval($service_id))->first();
+        $service = RoomService::where('id', $service_id)->first();
 
         try {
             $service_id = $service->id;
@@ -682,7 +728,6 @@ class ContentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'type' => 'required',
-            'image' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -690,15 +735,9 @@ class ContentController extends Controller
         }
 
         try {
-            $file_name = time() . " - " . $request->image->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_image = asset("uploads/menu_type/" . $file_name);
-            $request->image->move(public_path('uploads/menu_type/'), $file_name);
-
             MenuType::create([
                 'hotel_id' => $hotel_id,
                 'type' => $request->type,
-                'image' => $path_image,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -818,7 +857,6 @@ class ContentController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'image' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -826,18 +864,12 @@ class ContentController extends Controller
         }
 
         try {
-            $file_name = time() . " - " . $request->image->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_image = asset("uploads/menu/" . $file_name);
-            $request->image->move(public_path('uploads/menu/'), $file_name);
-
             Menu::create([
                 'hotel_id' => $hotel_id,
                 'type' => $request->type,
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $request->price,
-                'image' => $path_image,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -847,6 +879,39 @@ class ContentController extends Controller
         }
 
         return response()->json('menu added succesfully');
+    }
+
+    public function menu_list($hotel_id)
+    {
+        try {
+            $menus = Menu::where('hotel_id', $hotel_id)->get();
+
+            $menu_list = [];
+            foreach ($menus as $menu) {
+                $menu_id = $menu->id;
+                $menu_name = $menu->name;
+                $menu_description = $menu->description;
+                $menu_price = $menu->price;
+                $menu_image = $menu->image;
+
+                $menu_list[] = [
+                    'menu_id' => $menu_id,
+                    'menu_name' => $menu_name,
+                    'menu_description' => $menu_description,
+                    'menu_price' => $menu_price,
+                    'menu_image' => $menu_image,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save menu',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'menu_list' => $menu_list
+        ]);
     }
 
     public function menu_data($menu_id)
