@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('hotel_id')->index();
             $table->foreign('hotel_id')->references('id')->on('hotels');
             $table->string('type');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
