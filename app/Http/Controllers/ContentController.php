@@ -792,6 +792,7 @@ class ContentController extends Controller
         }
 
         return response()->json([
+            'id' => $menu_type_id,
             'type' => $type,
             'image' => $image
         ]);
