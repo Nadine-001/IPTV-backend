@@ -760,9 +760,11 @@ class ContentController extends Controller
                 $image = $types->image;
 
                 $menu_type[] = [
-                    'id' => $types->id,
-                    'type' => $type,
-                    'image' => $image,
+                    'menu_type' => [
+                        'id' => $types->id,
+                        'type' => $type,
+                        'image' => $image
+                    ]
                 ];
             }
         } catch (\Throwable $th) {
@@ -773,7 +775,7 @@ class ContentController extends Controller
         }
 
         return response()->json([
-            'menu_type' => $menu_type
+            'menu_types' => $menu_type
         ]);
     }
 
