@@ -76,17 +76,19 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::post('/hotel_wifi/{hotel_id}', [ContentController::class, 'hotel_qr_code_wifi']);
         Route::post('/hotel_payment/{hotel_id}', [ContentController::class, 'hotel_qr_code_payment']);
         Route::post('/hotel_facilities/{hotel_id}', [ContentController::class, 'hotel_facilities_create']);
+        Route::get('/hotel_facilities_list/{hotel_id}', [ContentController::class, 'hotel_facilities_list']);
         Route::get('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_data']);
         Route::put('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_update']);
         Route::put('/facility_image/{facility_id}', [ContentController::class, 'update_facility_image']);
         Route::delete('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_delete']);
         Route::post('/room_type/{hotel_id}', [ContentController::class, 'room_type_create']);
         Route::get('/room_type_list/{hotel_id}', [ContentController::class, 'room_type_list']);
-        Route::get('/room_type/{room_id}', [ContentController::class, 'room_type_detail']);
+        Route::get('/room_type_data/{room_id}', [ContentController::class, 'room_type_detail']);
         Route::put('/room_type/{room_id}', [ContentController::class, 'room_type_update']);
         Route::put('/room_type_image/{room_id}', [ContentController::class, 'update_room_image']);
         Route::delete('/room_type/{room_id}', [ContentController::class, 'room_type_delete']);
         Route::post('/amenities/{hotel_id}', [ContentController::class, 'amenities_create']);
+        Route::get('/amenities_list/{hotel_id}', [ContentController::class, 'amenities_list']);
         Route::get('/amenities/{service_id}', [ContentController::class, 'amenities_data']);
         Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
         Route::put('/amenity_image/{service_id}', [ContentController::class, 'update_amenity_image']);
@@ -99,6 +101,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::put('/menu_type_image/{hotel_id}', [ContentController::class, 'update_menu_type_image']);
         Route::delete('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_delete']);
         Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
+        Route::get('/menu_list/{hotel_id}', [ContentController::class, 'menu_list']);
         Route::get('/menu/{menu_id}', [ContentController::class, 'menu_data']);
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
         Route::put('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
