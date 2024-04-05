@@ -67,7 +67,7 @@ Route::group(['middleware' => 'firebase'], function () {
     Route::post('/change_password', [AuthController::class, 'change_password']);
 
     // CONTENT ADMIN
-    Route::middleware('content_admin')->group(function () {
+    // Route::middleware('content_admin')->group(function () {
         Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
         Route::get('/greeting/{hotel_id}', [ContentController::class, 'greeting_content']);
         Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about_data']);
@@ -97,16 +97,17 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_content']);
         Route::post('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_create']);
         Route::get('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_list']);
-        Route::put('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_update']);
-        Route::put('/menu_type_image/{hotel_id}', [ContentController::class, 'update_menu_type_image']);
-        Route::delete('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_delete']);
+        Route::get('/menu_type_data/{menu_type_id}', [ContentController::class, 'menu_type_data']);
+        Route::put('/menu_type/{menu_type_id}', [ContentController::class, 'menu_type_update']);
+        Route::put('/menu_type_image/{menu_type_id}', [ContentController::class, 'update_menu_type_image']);
+        Route::delete('/menu_type/{menu_type_id}', [ContentController::class, 'menu_type_delete']);
         Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
         Route::get('/menu_list/{hotel_id}', [ContentController::class, 'menu_list']);
         Route::get('/menu/{menu_id}', [ContentController::class, 'menu_data']);
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
         Route::put('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
         Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
-    });
+    // });
 
     // RECEPTIONIST
     Route::middleware('receptionist')->group(function () {
