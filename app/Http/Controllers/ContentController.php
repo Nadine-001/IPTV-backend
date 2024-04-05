@@ -220,7 +220,6 @@ class ContentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'image' => 'required',
             'description' => 'required',
         ]);
 
@@ -229,16 +228,10 @@ class ContentController extends Controller
         }
 
         try {
-            $file_name = time() . " - " . $request->image->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_image = asset("uploads/hotel_facilities/" . $file_name);
-            $request->image->move(public_path('uploads/hotel_facilities/'), $file_name);
-
             HotelFacilities::create([
                 'hotel_id' => $hotel_id,
                 'name' => $request->name,
                 'description' => $request->description,
-                'image' => $path_image
             ]);
         } catch (\Throwable $th) {
             return response()->json([
