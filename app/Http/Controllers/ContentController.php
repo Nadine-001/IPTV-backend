@@ -264,7 +264,7 @@ class ContentController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to get hotel facilities',
+                'message' => 'failed to get hotel facilities list',
                 'errors' => $th->getMessage()
             ], 400);
         }
@@ -420,7 +420,7 @@ class ContentController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to get room type',
+                'message' => 'failed to get room type list',
                 'errors' => $th->getMessage()
             ], 400);
         }
@@ -548,12 +548,12 @@ class ContentController extends Controller
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to save amenities',
+                'message' => 'failed to save amenity',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json('amenities added succesfully');
+        return response()->json('amenity added succesfully');
     }
 
     public function amenities_list($hotel_id)
@@ -575,7 +575,7 @@ class ContentController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to save amenities',
+                'message' => 'failed to get amenities list',
                 'errors' => $th->getMessage()
             ], 400);
         }
@@ -595,7 +595,7 @@ class ContentController extends Controller
             $service_image = $service->image;
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to get amenities',
+                'message' => 'failed to get amenity',
                 'errors' => $th->getMessage()
             ], 400);
         }
@@ -625,12 +625,12 @@ class ContentController extends Controller
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to update amenities',
+                'message' => 'failed to update amenity',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json('amenities updated succesfully');
+        return response()->json('amenity updated succesfully');
     }
 
     public function update_amenity_image(Request $request, $service_id)
@@ -671,12 +671,12 @@ class ContentController extends Controller
 
         if (!$deleted) {
             return response()->json([
-                "message" => "failed to delete room service"
+                "message" => "failed to delete amenity"
             ], 400);
         }
 
         return response()->json([
-            "message" => "room service deleted successfully"
+            "message" => "amenity deleted successfully"
         ]);
     }
 
@@ -767,13 +767,33 @@ class ContentController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to get menu type',
+                'message' => 'failed to get menu type list',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
         return response()->json([
             'menu_type' => $menu_type
+        ]);
+    }
+
+    public function menu_type_data($menu_type_id)
+    {
+        try {
+            $menu_type = MenuType::where('id', $menu_type_id)->first();
+
+            $type = $menu_type->type;
+            $image = $menu_type->image;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get menu type',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'type' => $type,
+            'image' => $image
         ]);
     }
 
@@ -787,10 +807,10 @@ class ContentController extends Controller
             return response()->json($validator->errors());
         }
 
-        $menu_types = MenuType::where('id', $menu_type_id)->first();
+        $menu_type = MenuType::where('id', $menu_type_id)->first();
 
         try {
-            $menu_types->update([
+            $menu_type->update([
                 'type' => $request->type,
             ]);
         } catch (\Throwable $th) {
@@ -826,12 +846,12 @@ class ContentController extends Controller
             ]);
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to update menu type',
+                'message' => 'failed to update menu type image',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json('menu type updated succesfully');
+        return response()->json('menu type image updated succesfully');
     }
 
     public function menu_type_delete($menu_type_id)
@@ -904,7 +924,7 @@ class ContentController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to save menu',
+                'message' => 'failed to get menu list',
                 'errors' => $th->getMessage()
             ], 400);
         }
@@ -926,7 +946,7 @@ class ContentController extends Controller
             $menu_image = $menu->image;
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to update menu',
+                'message' => 'failed to get menu',
                 'errors' => $th->getMessage()
             ], 400);
         }
