@@ -256,10 +256,12 @@ class ContentController extends Controller
                 $facility_image = $facility->image;
 
                 $facility_data[] = [
-                    'facility_id' => $facility_id,
-                    'facility_name' => $facility_name,
-                    'facility_description' => $facility_description,
-                    'facility_image' => $facility_image,
+                    'facility' => [
+                        'facility_id' => $facility_id,
+                        'facility_name' => $facility_name,
+                        'facility_description' => $facility_description,
+                        'facility_image' => $facility_image,
+                    ]
                 ];
             }
         } catch (\Throwable $th) {
@@ -413,9 +415,11 @@ class ContentController extends Controller
                 $image = $room->image;
 
                 $room_type[] = [
-                    'id' => $room->id,
-                    'type' => $type,
-                    'image' => $image,
+                    'room_type' => [
+                        'id' => $room->id,
+                        'type' => $type,
+                        'image' => $image,
+                    ]
                 ];
             }
         } catch (\Throwable $th) {
@@ -426,7 +430,7 @@ class ContentController extends Controller
         }
 
         return response()->json([
-            'room_type' => $room_type
+            'room_types' => $room_type
         ]);
     }
 
@@ -447,6 +451,7 @@ class ContentController extends Controller
         }
 
         return response()->json([
+            'id' => $room_id,
             'type' => $type,
             'facility' => $facility,
             'description' => $description,
@@ -568,9 +573,11 @@ class ContentController extends Controller
                 $service_image = $service->image;
 
                 $service_list[] = [
-                    'service_id' => $service_id,
-                    'service_name' => $service_name,
-                    'service_image' => $service_image,
+                    'service' => [
+                        'service_id' => $service_id,
+                        'service_name' => $service_name,
+                        'service_image' => $service_image,
+                    ]
                 ];
             }
         } catch (\Throwable $th) {
@@ -918,11 +925,13 @@ class ContentController extends Controller
                 $menu_image = $menu->image;
 
                 $menu_list[] = [
-                    'menu_id' => $menu_id,
-                    'menu_name' => $menu_name,
-                    'menu_description' => $menu_description,
-                    'menu_price' => $menu_price,
-                    'menu_image' => $menu_image,
+                    'menu' => [
+                        'menu_id' => $menu_id,
+                        'menu_name' => $menu_name,
+                        'menu_description' => $menu_description,
+                        'menu_price' => $menu_price,
+                        'menu_image' => $menu_image,
+                    ]
                 ];
             }
         } catch (\Throwable $th) {
