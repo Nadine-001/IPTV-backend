@@ -105,7 +105,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/menu_list/{hotel_id}', [ContentController::class, 'menu_list']);
         Route::get('/menu/{menu_id}', [ContentController::class, 'menu_data']);
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
-        Route::put('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
+        Route::post('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
         Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
     });
 
