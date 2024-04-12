@@ -67,7 +67,7 @@ Route::group(['middleware' => 'firebase'], function () {
     Route::post('/change_password', [AuthController::class, 'change_password']);
 
     // CONTENT ADMIN
-    // Route::middleware('content_admin')->group(function () {
+    Route::middleware('content_admin')->group(function () {
         Route::post('/greeting/{hotel_id}', [ContentController::class, 'greeting']);
         Route::get('/greeting/{hotel_id}', [ContentController::class, 'greeting_content']);
         Route::get('/hotel_about/{hotel_id}', [ContentController::class, 'hotel_about_data']);
@@ -79,19 +79,19 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/hotel_facilities_list/{hotel_id}', [ContentController::class, 'hotel_facilities_list']);
         Route::get('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_data']);
         Route::put('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_update']);
-        Route::put('/facility_image/{facility_id}', [ContentController::class, 'update_facility_image']);
+        Route::post('/facility_image/{facility_id}', [ContentController::class, 'update_facility_image']);
         Route::delete('/hotel_facilities/{facility_id}', [ContentController::class, 'hotel_facilities_delete']);
         Route::post('/room_type/{hotel_id}', [ContentController::class, 'room_type_create']);
         Route::get('/room_type_list/{hotel_id}', [ContentController::class, 'room_type_list']);
         Route::get('/room_type_data/{room_id}', [ContentController::class, 'room_type_detail']);
         Route::put('/room_type/{room_id}', [ContentController::class, 'room_type_update']);
-        Route::put('/room_type_image/{room_id}', [ContentController::class, 'update_room_image']);
+        Route::post('/room_type_image/{room_id}', [ContentController::class, 'update_room_image']);
         Route::delete('/room_type/{room_id}', [ContentController::class, 'room_type_delete']);
         Route::post('/amenities/{hotel_id}', [ContentController::class, 'amenities_create']);
         Route::get('/amenities_list/{hotel_id}', [ContentController::class, 'amenities_list']);
         Route::get('/amenities/{service_id}', [ContentController::class, 'amenities_data']);
         Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
-        Route::put('/amenity_image/{service_id}', [ContentController::class, 'update_amenity_image']);
+        Route::post('/amenity_image/{service_id}', [ContentController::class, 'update_amenity_image']);
         Route::delete('/amenities/{service_id}', [ContentController::class, 'amenities_delete']);
         Route::post('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_menu']);
         Route::get('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_content']);
@@ -107,7 +107,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
         Route::put('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
         Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
-    // });
+    });
 
     // RECEPTIONIST
     Route::middleware('receptionist')->group(function () {
