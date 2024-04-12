@@ -22,7 +22,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $hotel = Hotel::where('id', intval($hotel_id))->first();
@@ -103,7 +103,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
@@ -224,7 +224,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
@@ -308,7 +308,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $facility = HotelFacilities::where('id', $facility_id)->first();
@@ -335,7 +335,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $facility = HotelFacilities::where('id', $facility_id)->first();
@@ -384,7 +384,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
@@ -468,7 +468,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $room = Room::where('id', $room_id)->first();
@@ -496,7 +496,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $room = Room::where('id', $room_id)->first();
@@ -543,7 +543,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
@@ -621,7 +621,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $service = RoomService::where('id', intval($service_id))->first();
@@ -647,7 +647,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $service = RoomService::where('id', intval($service_id))->first();
@@ -738,7 +738,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
@@ -814,7 +814,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $menu_type = MenuType::where('id', $menu_type_id)->first();
@@ -840,7 +840,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $menu_types = MenuType::where('id', $menu_type_id)->first();
@@ -890,7 +890,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         try {
@@ -982,7 +982,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $menu = Menu::where('id', intval($menu_id))->first();
@@ -1010,7 +1010,7 @@ class ContentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return response()->json($validator->errors(), 406);
         }
 
         $menu = Menu::where('id', intval($menu_id))->first();
