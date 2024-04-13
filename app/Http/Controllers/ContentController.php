@@ -919,14 +919,20 @@ class ContentController extends Controller
             $menu_list = [];
             foreach ($menus as $menu) {
                 $menu_id = $menu->id;
+                $menu_type = $menu->type;
                 $menu_name = $menu->name;
                 $menu_description = $menu->description;
                 $menu_price = $menu->price;
                 $menu_image = $menu->image;
 
-                $menu_list[] = [
+                if (!isset($menu_list[$menu_type])) {
+                    $menu_list[$menu_type] = [];
+                }
+
+                $menu_list[$menu_type][] = [
                     'menu' => [
                         'menu_id' => $menu_id,
+                        'menu_type' => $menu_type,
                         'menu_name' => $menu_name,
                         'menu_description' => $menu_description,
                         'menu_price' => $menu_price,
