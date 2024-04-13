@@ -633,6 +633,7 @@ class ContentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'status' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -644,6 +645,7 @@ class ContentController extends Controller
         try {
             $service->update([
                 'name' => $request->name,
+                'is_deleted' => $request->status,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -1036,10 +1038,11 @@ class ContentController extends Controller
     public function menu_update(Request $request, $menu_id)
     {
         $validator = Validator::make($request->all(), [
-            // 'type' => 'required',
+            'type' => 'required',
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
+            'status' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -1050,9 +1053,11 @@ class ContentController extends Controller
 
         try {
             $menu->update([
+                'type' => $request->type,
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $request->price,
+                'is_deleted' => $request->status,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
