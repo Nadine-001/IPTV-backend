@@ -943,11 +943,9 @@ class ContentController extends Controller
         }
 
         try {
-            $menu_type = MenuType::where('id', $request->type)->first();
-
             Menu::create([
                 'hotel_id' => $hotel_id,
-                'type' => $menu_type->type,
+                'type' => $request->type,
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $request->price,
