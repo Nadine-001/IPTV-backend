@@ -897,9 +897,11 @@ class ContentController extends Controller
         }
 
         try {
+            $menu_type = MenuType::where('id', $request->type)->first();
+
             Menu::create([
                 'hotel_id' => $hotel_id,
-                'type' => $request->type,
+                'type' => $menu_type->type,
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $request->price,
@@ -914,10 +916,11 @@ class ContentController extends Controller
         return response()->json('menu added succesfully');
     }
 
-    public function menu_list($hotel_id)
+    public function menu_list($menu_type_id)
     {
         try {
-            $menus = Menu::where('hotel_id', $hotel_id)->get();
+            $menu_type = MenuType::where('id', $menu_type_id)->first();
+            $menus = Menu::where('type', $menu_type->type)->get();
 
             $menu_list = [];
             foreach ($menus as $menu) {
