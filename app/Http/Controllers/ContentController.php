@@ -977,23 +977,17 @@ class ContentController extends Controller
                 $menu_price = $menu->price;
                 $menu_image = $menu->image;
 
-                if (!isset($menu_list[$menu_type])) {
-                    $menu_list[$menu_type] = [
+                $menu_list[] = [
+                    'menu' => [
+                        'menu_id' => $menu_id,
                         'menu_type' => $menu_type,
-                        'menu' => []
-                    ];
-                }
-
-                $menu_list[$menu_type]['menu'][] = [
-                    'menu_id' => $menu_id,
-                    'menu_name' => $menu_name,
-                    'menu_description' => $menu_description,
-                    'menu_price' => $menu_price,
-                    'menu_image' => $menu_image,
+                        'menu_name' => $menu_name,
+                        'menu_description' => $menu_description,
+                        'menu_price' => $menu_price,
+                        'menu_image' => $menu_image,
+                    ]
                 ];
             }
-
-            $menu_list = array_values($menu_list);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get menu list',
