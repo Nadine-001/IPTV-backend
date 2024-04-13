@@ -246,7 +246,9 @@ class ContentController extends Controller
     public function hotel_facilities_list($hotel_id)
     {
         try {
-            $facilities = HotelFacilities::where('hotel_id', $hotel_id)->get();
+            $facilities = HotelFacilities::where('hotel_id', $hotel_id)
+                ->where('is_deleted', 0)
+                ->get();
 
             $facility_data = [];
             foreach ($facilities as $facility) {
@@ -361,12 +363,15 @@ class ContentController extends Controller
 
     public function hotel_facilities_delete($facility_id)
     {
-        $facility = HotelFacilities::where('id', intval($facility_id))->first();
-        $deleted = $facility->delete();
-
-        if (!$deleted) {
+        try {
+            $facility = HotelFacilities::where('id', intval($facility_id))->first();
+            $facility->update([
+                'is_deleted' => true,
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
-                "message" => "failed to delete hotel facility"
+                'message' => 'failed to delete hotel facility',
+                'errors' => $th->getMessage()
             ], 400);
         }
 
@@ -406,7 +411,9 @@ class ContentController extends Controller
 
     public function room_type_list($hotel_id)
     {
-        $rooms = Room::where('hotel_id', $hotel_id)->get();
+        $rooms = Room::where('hotel_id', $hotel_id)
+            ->where('is_deleted', 0)
+            ->get();
 
         try {
             $room_type = [];
@@ -522,12 +529,15 @@ class ContentController extends Controller
 
     public function room_type_delete($room_id)
     {
-        $room = Room::where('id', $room_id)->first();
-        $deleted = $room->delete();
-
-        if (!$deleted) {
+        try {
+            $room = Room::where('id', $room_id)->first();
+            $room->update([
+                'is_deleted' => true,
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
-                "message" => "failed to delete room type"
+                'message' => 'failed to delete room type',
+                'errors' => $th->getMessage()
             ], 400);
         }
 
@@ -564,7 +574,9 @@ class ContentController extends Controller
     public function amenities_list($hotel_id)
     {
         try {
-            $services = RoomService::where('hotel_id', $hotel_id)->get();
+            $services = RoomService::where('hotel_id', $hotel_id)
+                ->where('is_deleted', 0)
+                ->get();
 
             $service_list = [];
             foreach ($services as $service) {
@@ -761,7 +773,9 @@ class ContentController extends Controller
 
     public function menu_type_list($hotel_id)
     {
-        $menu_types = MenuType::where('hotel_id', $hotel_id)->get();
+        $menu_types = MenuType::where('hotel_id', $hotel_id)
+            ->where('is_deleted', 0)
+            ->get();
 
         try {
             $menu_type = [];
@@ -869,12 +883,15 @@ class ContentController extends Controller
 
     public function menu_type_delete($menu_type_id)
     {
-        $menu_types = MenuType::where('id', $menu_type_id)->first();
-        $deleted = $menu_types->delete();
-
-        if (!$deleted) {
+        try {
+            $menu_types = MenuType::where('id', $menu_type_id)->first();
+            $menu_types->update([
+                'is_deleted' => true,
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
-                "message" => "failed to delete menu type"
+                'message' => 'failed to delete menu type',
+                'errors' => $th->getMessage()
             ], 400);
         }
 
@@ -920,7 +937,9 @@ class ContentController extends Controller
     {
         try {
             $menu_type = MenuType::where('id', $menu_type_id)->first();
-            $menus = Menu::where('type', $menu_type->type)->get();
+            $menus = Menu::where('type', $menu_type->type)
+                ->where('is_deleted', 0)
+                ->get();
 
             $menu_list = [];
             foreach ($menus as $menu) {
