@@ -803,6 +803,35 @@ class ContentController extends Controller
         ]);
     }
 
+    public function menu_type_dropdown($hotel_id)
+    {
+        $menu_types = MenuType::where('hotel_id', $hotel_id)
+            ->where('is_deleted', 0)
+            ->get();
+
+        try {
+            $menu_type = [];
+            foreach ($menu_types as $types) {
+                $type = $types->type;
+                $image = $types->image;
+
+                $menu_type[] = [
+                    'menu_id' => $types->id,
+                    'menu_type' => $type,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get menu type list',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'menu_types' => $menu_type
+        ]);
+    }
+
     public function menu_type_data($menu_type_id)
     {
         try {

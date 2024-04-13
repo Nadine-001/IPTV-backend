@@ -97,12 +97,13 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_content']);
         Route::post('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_create']);
         Route::get('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_list']);
+        Route::get('/type/{hotel_id}', [ContentController::class, 'menu_type_dropdown']);
         Route::get('/menu_type_data/{menu_type_id}', [ContentController::class, 'menu_type_data']);
         Route::put('/menu_type/{menu_type_id}', [ContentController::class, 'menu_type_update']);
         Route::put('/menu_type_image/{menu_type_id}', [ContentController::class, 'update_menu_type_image']);
         Route::delete('/menu_type/{menu_type_id}', [ContentController::class, 'menu_type_delete']);
         Route::post('/menu/{hotel_id}', [ContentController::class, 'menu_create']);
-        Route::get('/menu_list/{hotel_id}', [ContentController::class, 'menu_list']);
+        Route::get('/menu_list/{menu_type_id}', [ContentController::class, 'menu_list']);
         Route::get('/menu/{menu_id}', [ContentController::class, 'menu_data']);
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
         Route::post('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
