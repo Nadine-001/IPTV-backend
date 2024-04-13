@@ -232,6 +232,7 @@ class ContentController extends Controller
                 'hotel_id' => $hotel_id,
                 'name' => $request->name,
                 'description' => $request->description,
+                'is_deleted' => 0,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -398,6 +399,7 @@ class ContentController extends Controller
                 'type' => $request->type,
                 'facility' => $request->facility,
                 'description' => $request->description,
+                'is_deleted' => 0,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -560,6 +562,7 @@ class ContentController extends Controller
             RoomService::create([
                 'hotel_id' => $hotel_id,
                 'name' => $request->name,
+                'is_deleted' => 0,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -760,6 +763,7 @@ class ContentController extends Controller
             MenuType::create([
                 'hotel_id' => $hotel_id,
                 'type' => $request->type,
+                'is_deleted' => 0,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -949,6 +953,7 @@ class ContentController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $request->price,
+                'is_deleted' => 0,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
