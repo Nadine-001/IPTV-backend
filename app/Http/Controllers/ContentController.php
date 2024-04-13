@@ -673,12 +673,15 @@ class ContentController extends Controller
 
     public function amenities_delete(Request $request, $service_id)
     {
-        $service = RoomService::where('id', intval($service_id))->first();
-        $deleted = $service->delete();
-
-        if (!$deleted) {
+        try {
+            $service = RoomService::where('id', intval($service_id))->first();
+            $service->update([
+                'is_deleted' => true,
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
-                "message" => "failed to delete amenity"
+                'message' => 'failed to delete amenity',
+                'errors' => $th->getMessage()
             ], 400);
         }
 
@@ -1046,12 +1049,15 @@ class ContentController extends Controller
 
     public function menu_delete(Request $request, $menu_id)
     {
-        $menu = Menu::find($menu_id)->first();
-        $deleted = $menu->delete();
-
-        if (!$deleted) {
+        try {
+            $menu = Menu::find($menu_id)->first();
+            $menu->update([
+                'is_deleted' => true,
+            ]);
+        } catch (\Throwable $th) {
             return response()->json([
-                "message" => "failed to delete menu"
+                'message' => 'failed to delete menu',
+                'errors' => $th->getMessage()
             ], 400);
         }
 
