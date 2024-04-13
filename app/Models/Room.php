@@ -18,6 +18,7 @@ class Room extends Model
         'description',
         'image',
         'television',
+        'is_deleted',
     ];
 
     public function hotel(): BelongsTo

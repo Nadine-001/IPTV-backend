@@ -15,6 +15,7 @@ class HotelFacilities extends Model
         'name',
         'description',
         'image',
+        'is_deleted',
     ];
 
     public function hotel(): BelongsTo

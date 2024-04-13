@@ -14,6 +14,7 @@ class MenuType extends Model
         'hotel_id',
         'type',
         'image',
+        'is_deleted',
     ];
 
     public function hotel(): BelongsTo

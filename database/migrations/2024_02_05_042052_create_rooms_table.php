@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('image')->nullable();
             $table->integer('television')->nullable();
+            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });
     }
