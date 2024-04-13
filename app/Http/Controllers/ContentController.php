@@ -926,20 +926,22 @@ class ContentController extends Controller
                 $menu_image = $menu->image;
 
                 if (!isset($menu_list[$menu_type])) {
-                    $menu_list[$menu_type] = [];
+                    $menu_list[$menu_type] = [
+                        'menu_type' => $menu_type,
+                        'menu' => []
+                    ];
                 }
 
-                $menu_list[$menu_type][] = [
-                    'menu' => [
-                        'menu_id' => $menu_id,
-                        'menu_type' => $menu_type,
-                        'menu_name' => $menu_name,
-                        'menu_description' => $menu_description,
-                        'menu_price' => $menu_price,
-                        'menu_image' => $menu_image,
-                    ]
+                $menu_list[$menu_type]['menu'][] = [
+                    'menu_id' => $menu_id,
+                    'menu_name' => $menu_name,
+                    'menu_description' => $menu_description,
+                    'menu_price' => $menu_price,
+                    'menu_image' => $menu_image,
                 ];
             }
+
+            $menu_list = array_values($menu_list);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get menu list',
@@ -958,6 +960,7 @@ class ContentController extends Controller
             $menu = Menu::where('id', intval($menu_id))->first();
 
             $menu_id = $menu->id;
+            $menu_type = $menu->type;
             $menu_name = $menu->name;
             $menu_description = $menu->description;
             $menu_price = $menu->price;
@@ -971,6 +974,7 @@ class ContentController extends Controller
 
         return response()->json([
             'menu_id' => $menu_id,
+            'menu_type' => $menu_type,
             'menu_name' => $menu_name,
             'menu_description' => $menu_description,
             'menu_price' => $menu_price,
