@@ -16,6 +16,7 @@ class RoomService extends Model
         'hotel_id',
         'name',
         'image',
+        'is_deleted',
     ];
 
     public function hotel(): BelongsTo

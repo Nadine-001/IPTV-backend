@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('description');
             $table->float('price');
             $table->string('image')->nullable();
+            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });
     }

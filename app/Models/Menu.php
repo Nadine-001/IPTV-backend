@@ -19,6 +19,7 @@ class Menu extends Model
         'description',
         'price',
         'image',
+        'is_deleted',
     ];
 
     public function hotel(): BelongsTo
