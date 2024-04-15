@@ -143,7 +143,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/hotel', [ClientController::class, 'hotel_data_list']);
         Route::get('/hotel_data/{hotel_id}', [ClientController::class, 'hotel_data']);
         Route::put('/update_hotel/{hotel_id}', [ClientController::class, 'update_hotel']);
-        Route::put('/logo/{hotel_id}', [ClientController::class, 'update_hotel_logo']);
+        Route::post('/logo/{hotel_id}', [ClientController::class, 'update_hotel_logo']);
         Route::get('television_data/{hotel_id}', [ClientController::class, 'television_data']);
         Route::get('get_television/{television_id}', [ClientController::class, 'get_television']);
         Route::put('update_television/{television_id}', [ClientController::class, 'update_television']);
