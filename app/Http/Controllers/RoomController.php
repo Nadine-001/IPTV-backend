@@ -61,7 +61,7 @@ class RoomController extends Controller
             'room_number' => $room_number,
             'room_type' => $room_type,
             'room_facility' => $room_facility,
-            'room_facility' => $room_description,
+            'room_description' => $room_description,
             'room_image' => $room_image,
         ]);
     }
