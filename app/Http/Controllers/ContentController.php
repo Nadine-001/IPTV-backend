@@ -615,6 +615,7 @@ class ContentController extends Controller
             $service_id = $service->id;
             $service_name = $service->name;
             $service_image = $service->image;
+            $service_status = $service->is_deleted;
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get amenity',
@@ -626,6 +627,7 @@ class ContentController extends Controller
             'service_id' => $service_id,
             'service_name' => $service_name,
             'service_image' => $service_image,
+            'service_status' => $service_status,
         ]);
     }
 
@@ -1018,6 +1020,7 @@ class ContentController extends Controller
             $menu_description = $menu->description;
             $menu_price = $menu->price;
             $menu_image = $menu->image;
+            $menu_status = $menu->is_deleted;
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get menu',
@@ -1032,6 +1035,7 @@ class ContentController extends Controller
             'menu_description' => $menu_description,
             'menu_price' => $menu_price,
             'menu_image' => $menu_image,
+            'menu_status' => $menu_status,
         ]);
     }
 
