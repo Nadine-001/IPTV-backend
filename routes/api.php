@@ -54,7 +54,7 @@ Route::get('/menu_list', [MenuController::class, 'menu_list']);
 Route::get('/qr_code', [MenuController::class, 'qr_code']);
 
 //FOOD ORDER REQUEST
-Route::post('/add_menu_to_cart/{menu_id}', [FoodServiceRequestController::class, 'add_to_cart']);
+Route::post('/add_menu_to_cart', [FoodServiceRequestController::class, 'add_to_cart']);
 Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
 Route::put('/increase_item_order/{item_id}', [FoodServiceRequestController::class, 'increase_item']);
 Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::class, 'decrease_item']);
