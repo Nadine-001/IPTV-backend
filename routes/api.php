@@ -41,7 +41,7 @@ Route::get('/room_about', [RoomController::class, 'room_about']);
 Route::get('/room_service', [RoomController::class, 'room_service']);
 
 // ROOM SERVICE REQUEST
-Route::post('/add_service_to_cart/{service_id}', [RoomServiceRequestController::class, 'add_to_cart']);
+Route::post('/add_service_to_cart', [RoomServiceRequestController::class, 'add_to_cart']);
 Route::get('/service_cart', [RoomServiceRequestController::class, 'show_cart']);
 Route::put('/increase_item_request/{item_id}', [RoomServiceRequestController::class, 'increase_item']);
 Route::put('/decrease_item_request/{item_id}', [RoomServiceRequestController::class, 'decrease_item']);
