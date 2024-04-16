@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Validator;
 
 class RoomServiceRequestController extends Controller
 {
-    public function add_to_cart(Request $request, $service_id)
+    public function add_to_cart(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
-            // 'quantity' => 'required',
+            'service_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -32,7 +32,7 @@ class RoomServiceRequestController extends Controller
             TempCartRoomService::create([
                 'hotel_id' => $hotel->id,
                 'television_id' => $television->id,
-                'room_service_id' => $service_id,
+                'room_service_id' => $request->service_id,
                 'qty' => 1,
                 'note' => $request->note,
             ]);
@@ -43,7 +43,11 @@ class RoomServiceRequestController extends Controller
             ], 400);
         }
 
-        return response()->json('added to cart succesfully');
+        return response()->json([
+            'mac_address' => $request->mac_address,
+            'service_id' => $request->service_id,
+            'note' => $request->note,
+        ]);
     }
 
     public function show_cart(Request $request)
@@ -200,14 +204,14 @@ class RoomServiceRequestController extends Controller
                 'television_id' => $television->id,
             ]);
 
-            foreach ($request->requests as $request) {
+            foreach ($request->requests as $req) {
                 RoomServiceRequestDetail::create([
                     'room_service_request_id' => $room_service_request->id,
-                    'room_service_id' => $request['room_service_id'],
-                    'qty' => $request['quantity'],
+                    'room_service_id' => $req['room_service_id'],
+                    'qty' => $req['quantity'],
                 ]);
 
-                $item = TempCartRoomService::where('id', $request['item_id'])->first();
+                $item = TempCartRoomService::where('id', $req['item_id'])->first();
                 $deleted = $item->delete();
 
                 if (!$deleted) {
@@ -225,6 +229,9 @@ class RoomServiceRequestController extends Controller
             ], 400);
         }
 
-        return response()->json('requests sent succesfully');
+        return response()->json([
+            'mac_address' => $request->mac_address,
+            'requests' => $request->requests,
+        ]);
     }
 }
