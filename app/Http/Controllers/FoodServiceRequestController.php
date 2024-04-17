@@ -205,10 +205,11 @@ class FoodServiceRequestController extends Controller
         return response()->json('item decreased succesfully');
     }
 
-    public function delete_order(Request $request, $item_id)
+    public function delete_order(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
+            'item_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -217,7 +218,7 @@ class FoodServiceRequestController extends Controller
 
         // DB::beginTransaction();
         try {
-            $item = TempCartFoodService::where('id', $item_id)->first();
+            $item = TempCartFoodService::where('id', $request->item_id)->first();
             $deleted = $item->delete();
 
             if (!$deleted) {

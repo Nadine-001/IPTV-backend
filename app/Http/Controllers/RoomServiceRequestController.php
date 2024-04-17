@@ -154,10 +154,11 @@ class RoomServiceRequestController extends Controller
         return response()->json('item decreased succesfully');
     }
 
-    public function delete_request(Request $request, $item_id)
+    public function delete_request(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
+            'item_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -165,7 +166,7 @@ class RoomServiceRequestController extends Controller
         }
 
         try {
-            $item = TempCartRoomService::where('id', $item_id)->first();
+            $item = TempCartRoomService::where('id', $request->item_id)->first();
             $deleted = $item->delete();
 
             if (!$deleted) {

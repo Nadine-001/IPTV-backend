@@ -45,7 +45,7 @@ Route::post('/add_service_to_cart', [RoomServiceRequestController::class, 'add_t
 Route::get('/service_cart', [RoomServiceRequestController::class, 'show_cart']);
 Route::put('/increase_item_request/{item_id}', [RoomServiceRequestController::class, 'increase_item']);
 Route::put('/decrease_item_request/{item_id}', [RoomServiceRequestController::class, 'decrease_item']);
-Route::delete('/delete_request/{item_id}', [RoomServiceRequestController::class, 'delete_request']);
+Route::delete('/delete_request', [RoomServiceRequestController::class, 'delete_request']);
 Route::post('/request_service', [RoomServiceRequestController::class, 'request_service']);
 
 // MENU
@@ -58,7 +58,7 @@ Route::post('/add_menu_to_cart', [FoodServiceRequestController::class, 'add_to_c
 Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
 Route::put('/increase_item_order/{item_id}', [FoodServiceRequestController::class, 'increase_item']);
 Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::class, 'decrease_item']);
-Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
+Route::delete('/delete_order', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 
 Route::group(['middleware' => 'firebase'], function () {
