@@ -67,6 +67,7 @@ class FoodServiceRequestController extends Controller
             // $temp_cart_details = TempCartFoodServiceDetail::where('temp_cart_food_service_id', $temp_cart->id)->get();
 
             $order_list = [];
+            $total_price = 0;
             // $order_detail = [];
             foreach ($carts as $cart) {
                 $menu = Menu::where('id', $cart->menu_id)->first();
@@ -88,7 +89,13 @@ class FoodServiceRequestController extends Controller
                     'menu_image' => $menu_image,
                     'quantity' => $quantity,
                 ];
+
+                $price = $menu_price * $quantity;
+                $total_price += $price;
             }
+            $order_list[] = [
+                'total_price' => $total_price,
+            ];
 
             // $total = $temp_cart->total;
             // $payment_method = $temp_cart->payment_method;
