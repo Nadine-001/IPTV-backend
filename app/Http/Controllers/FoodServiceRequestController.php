@@ -63,12 +63,9 @@ class FoodServiceRequestController extends Controller
         try {
             $television = Television::where('mac_address', $request->mac_address)->first();
             $carts = TempCartFoodService::where('television_id', $television->id)->get();
-            // if ($temp_cart) {
-            // $temp_cart_details = TempCartFoodServiceDetail::where('temp_cart_food_service_id', $temp_cart->id)->get();
 
             $order_list = [];
             $total_price = 0;
-            // $order_detail = [];
             foreach ($carts as $cart) {
                 $menu = Menu::where('id', $cart->menu_id)->first();
 
@@ -96,19 +93,6 @@ class FoodServiceRequestController extends Controller
             $order_list[] = [
                 'total_price' => $total_price,
             ];
-
-            // $total = $temp_cart->total;
-            // $payment_method = $temp_cart->payment_method;
-
-            // $food_order['order_detail'] = [$order_detail];
-
-            // $food_order['order_summary'] = [
-            //     'total' => $total,
-            //     'payment_method' => $payment_method,
-            // ];
-            // } else {
-            //     return response()->json([]);
-            // }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to place order',
@@ -286,11 +270,17 @@ class FoodServiceRequestController extends Controller
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
+            $is_paid = 0;
+            if (strtolower($request->payment_method) == "qris") {
+                $is_paid = 1;
+            }
+
             $food_service_request = FoodServiceRequest::create([
                 'hotel_id' => $hotel->id,
                 'television_id' => $television->id,
                 'total' => $request->total,
                 'payment_method' => $request->payment_method,
+                'is_paid' => $is_paid,
             ]);
 
             foreach ($request->orders as $order) {
