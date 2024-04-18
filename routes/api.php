@@ -132,6 +132,8 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/food_service_detail/{food_service_request_id}', [ServiceController::class, 'food_service_detail']);
         Route::post('/accept_food_order/{food_service_request_id}', [ServiceController::class, 'accept_food_order']);
         Route::post('/decline_food_order/{food_service_request_id}', [ServiceController::class, 'decline_food_order']);
+        Route::get('/payment_status/{food_service_request_id}', [ServiceController::class, 'payment_status']);
+        Route::put('/change_status/{food_service_request_id}', [ServiceController::class, 'change_status']);
         Route::get('/food_service_history/{hotel_id}', [ServiceController::class, 'food_service_history']);
     });
 

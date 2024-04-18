@@ -10,6 +10,7 @@ use App\Models\RoomServiceRequest;
 use App\Models\RoomServiceRequestDetail;
 use App\Models\Television;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
 {
@@ -349,6 +350,52 @@ class ServiceController extends Controller
 
         return response()->json([
             'is_accepted' => $is_accepted
+        ]);
+    }
+
+    public function payment_status($food_service_request_id)
+    {
+        try {
+            $food_order = FoodServiceRequest::where('id', $food_service_request_id)->first();
+
+            $status = $food_order->is_paid;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get payment status',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => $status
+        ]);
+    }
+
+    public function change_status(Request $request, $food_service_request_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $food_order = FoodServiceRequest::where('id', $food_service_request_id)->first();
+
+            $food_order->update([
+                'is_paid' => $request->status
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get payment status',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => $request->status
         ]);
     }
 
