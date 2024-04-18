@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('is_accepted')->nullable();
             $table->float('total');
             $table->string('payment_method');
+            $table->boolean('is_paid')->default(0);
             $table->timestamps();
         });
     }
