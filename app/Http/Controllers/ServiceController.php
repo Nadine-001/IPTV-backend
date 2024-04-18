@@ -236,6 +236,8 @@ class ServiceController extends Controller
                     $menu_image = $menu->image;
                     $order_qty = $food_service->qty;
                     $order_total = $food_service_request->total;
+                    $order_payment = $food_service_request->payment_method;
+                    $order_status = $food_service_request->is_paid;
 
                     $order_detail[] = [
                         'menu_id' => $menu_id,
@@ -253,6 +255,8 @@ class ServiceController extends Controller
                     'room_type' => $room_type,
                     'order_detail' => $order_detail,
                     'order_total' => $order_total,
+                    'order_payment' => $order_payment,
+                    'order_status' => $order_status,
                 ];
             }
         } catch (\Throwable $th) {
