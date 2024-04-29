@@ -30,12 +30,23 @@ class FoodServiceRequestController extends Controller
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
-            TempCartFoodService::create([
-                'hotel_id' => $hotel->id,
-                'television_id' => $television->id,
-                'menu_id' => $request->menu_id,
-                'qty' => 1,
-            ]);
+            $temp_cart = TempCartFoodService::where('television_id', $television->id)
+                ->where('hotel_id', $hotel->id)
+                ->where('menu_id', $request->menu_id)
+                ->first();
+            
+            if ($temp_cart) {
+                $temp_cart->update([
+                    'qty' => $temp_cart->qty + 1,
+                ]);
+            } else {
+                TempCartFoodService::create([
+                    'hotel_id' => $hotel->id,
+                    'television_id' => $television->id,
+                    'menu_id' => $request->menu_id,
+                    'qty' => 1,
+                ]);
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to add to cart',
@@ -46,7 +57,6 @@ class FoodServiceRequestController extends Controller
         return response()->json([
             'mac_address' => $request->mac_address,
             'menu_id' => $request->menu_id,
-            'note' => $request->note,
         ]);
     }
 
@@ -65,7 +75,6 @@ class FoodServiceRequestController extends Controller
             $carts = TempCartFoodService::where('television_id', $television->id)->get();
 
             $order_list = [];
-            $total_price = 0;
             foreach ($carts as $cart) {
                 $menu = Menu::where('id', $cart->menu_id)->first();
 
@@ -86,13 +95,7 @@ class FoodServiceRequestController extends Controller
                     'menu_image' => $menu_image,
                     'quantity' => $quantity,
                 ];
-
-                $price = $menu_price * $quantity;
-                $total_price += $price;
             }
-            $order_list[] = [
-                'total_price' => $total_price,
-            ];
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to place order',
@@ -100,7 +103,9 @@ class FoodServiceRequestController extends Controller
             ], 400);
         }
 
-        return response()->json($order_list);
+        return response()->json([
+            'order_list' => $order_list,
+        ]);
     }
 
     public function increase_item(Request $request, $item_id)
@@ -271,7 +276,7 @@ class FoodServiceRequestController extends Controller
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
             $is_paid = 0;
-            if (strtolower($request->payment_method) == "qris") {
+            if (strtolower($request->payment_method) == "scan qr") {
                 $is_paid = 1;
             }
 
