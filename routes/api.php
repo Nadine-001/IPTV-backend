@@ -51,13 +51,16 @@ Route::post('/request_service', [RoomServiceRequestController::class, 'request_s
 // MENU
 Route::get('/ads_lips', [MenuController::class, 'ads_lips_menu']);
 Route::get('/menu_list', [MenuController::class, 'menu_list']);
-Route::get('/qr_code', [MenuController::class, 'qr_code']);
+// Route::get('/list_menu', [MenuController::class, 'list_menu']);
+Route::get('/menu_type', [MenuController::class, 'menu_type']);
+// Route::get('/qr_code', [MenuController::class, 'qr_code']);
+Route::post('/payment_status', [MenuController::class, 'payment_status']);
 
 //FOOD ORDER REQUEST
 Route::post('/add_menu_to_cart', [FoodServiceRequestController::class, 'add_to_cart']);
 Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
-Route::put('/increase_item_order/{item_id}', [FoodServiceRequestController::class, 'increase_item']);
-Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::class, 'decrease_item']);
+// Route::put('/increase_item_order/{item_id}', [FoodServiceRequestController::class, 'increase_item']);
+// Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::class, 'decrease_item']);
 Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 
@@ -133,8 +136,9 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::post('/accept_food_order/{food_service_request_id}', [ServiceController::class, 'accept_food_order']);
         Route::post('/decline_food_order/{food_service_request_id}', [ServiceController::class, 'decline_food_order']);
         Route::get('/payment_status/{food_service_request_id}', [ServiceController::class, 'payment_status']);
-        Route::put('/change_status/{food_service_request_id}', [ServiceController::class, 'change_status']);
+        Route::post('/change_status/{food_service_rquest_id}', [ServiceController::class, 'change_status']);
         Route::get('/food_service_history/{hotel_id}', [ServiceController::class, 'food_service_history']);
+        Route::get('/revenue/{hotel_id}', [ServiceController::class, 'revenue']);
     });
 
     // SUPERADMIN
