@@ -460,4 +460,48 @@ class ServiceController extends Controller
             'order_history_list' => $order_history_list
         ]);
     }
+
+    public function revenue($hotel_id) {
+        $food_order_requests = FoodServiceRequest::where('hotel_id', $hotel_id)
+            ->where('is_accepted', 1)
+            ->where('is_paid', 1)
+            ->get();
+
+        $transaction_data = [];
+        try {
+            $revenue = 0;
+
+            foreach ($food_order_requests as $order_request) {
+                $television = Television::where('id', $order_request->television_id)->first();
+
+                $room_number = $television->room_number;
+                $guest_name = $television->guest_name;
+                $total = $order_request->total;
+                $payment_method = $order_request->payment_method;
+                $order_made = explode(' ',$order_request->created_at);
+                $order_complete = explode(' ',$order_request->updated_at);
+
+                $transaction_data[] = [
+                    'room_number' => $room_number,
+                    'guest_name' => $guest_name,
+                    'total' => $total,
+                    'payment_method' => $payment_method,
+                    'order_made' => $order_made[0] . ' ' . $order_made[1],
+                    'order_complete' => $order_complete[0] . ' ' . $order_complete[1],
+                ];
+
+                $revenue = $total + $revenue;
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get room service request history',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'revenue' => $revenue,
+            'transaction_data' => $transaction_data,
+        ]);
+    }
 }
