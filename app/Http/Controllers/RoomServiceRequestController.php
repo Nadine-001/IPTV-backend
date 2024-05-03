@@ -29,13 +29,24 @@ class RoomServiceRequestController extends Controller
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
-            TempCartRoomService::create([
-                'hotel_id' => $hotel->id,
-                'television_id' => $television->id,
-                'room_service_id' => $request->service_id,
-                'qty' => 1,
-                'note' => $request->note,
-            ]);
+            $temp_cart = TempCartRoomService::where('television_id', $television->id)
+                ->where('hotel_id', $hotel->id)
+                ->where('room_service_id', $request->service_id)
+                ->first();
+            
+            if ($temp_cart) {
+                $temp_cart->update([
+                    'qty' => $temp_cart->qty + 1,
+                ]);
+            } else {
+                TempCartRoomService::create([
+                    'hotel_id' => $hotel->id,
+                    'television_id' => $television->id,
+                    'room_service_id' => $request->service_id,
+                    'qty' => 1,
+                    'note' => $request->note,
+                ]);
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to add to cart',
@@ -46,7 +57,6 @@ class RoomServiceRequestController extends Controller
         return response()->json([
             'mac_address' => $request->mac_address,
             'service_id' => $request->service_id,
-            'note' => $request->note,
         ]);
     }
 
