@@ -11,6 +11,7 @@ use App\Models\TempCartFoodService;
 use App\Models\TempCartFoodServiceDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class FoodServiceRequestController extends Controller
@@ -275,19 +276,15 @@ class FoodServiceRequestController extends Controller
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
-            $is_paid = 0;
-            if (strtolower($request->payment_method) == "scan qr") {
-                $is_paid = 1;
-            }
-
             $food_service_request = FoodServiceRequest::create([
                 'hotel_id' => $hotel->id,
                 'television_id' => $television->id,
                 'total' => $request->total,
                 'payment_method' => $request->payment_method,
-                'is_paid' => $is_paid,
+                'is_paid' => 0,
             ]);
 
+            $item_details = [];
             foreach ($request->orders as $order) {
                 FoodServiceRequestDetail::create([
                     'food_service_request_id' => $food_service_request->id,
@@ -303,7 +300,18 @@ class FoodServiceRequestController extends Controller
                         "message" => "failed to delete item"
                     ], 500);
                 }
+
+                $menu = Menu::where('id', $order['menu_id'])->first();
+
+                $item_details[] = [
+                    "id" => strval($order['menu_id']),
+                    "name" => $menu->name,
+                    "price" => $menu->price,
+                    "quantity" => $order['quantity']
+                ];
             }
+
+            DB::commit();
 
             // $item_parent = TempCartFoodService::where('id', $item->temp_cart_food_service_id)->first();
             // $deleted = $item_parent->delete();
@@ -314,7 +322,59 @@ class FoodServiceRequestController extends Controller
             //     ], 500);
             // }
 
-            DB::commit();
+            date_default_timezone_set('Asia/Jakarta');
+            if (strtolower($request->payment_method) == "scan qr") {
+                $response = Http::withHeaders([
+                    'Accept: application/json',
+                    'Authorization' => 'Basic U0ItTWlkLXNlcnZlci1RS1F1dHZoaUFtUW1CeTktTjlKb0ZRaEM6',
+                    'Content-Type' => 'application/json',
+                ])
+                    ->post('https://api.sandbox.midtrans.com/v1/payment-links', [
+                        "transaction_details" => [
+                            "order_id" => date('Ymd') . strval($food_service_request->id),
+                            "gross_amount" => $request->total,
+                            "payment_link_id" => date('Ymd') . strval($food_service_request->id)
+                        ],
+                        "customer_required" => false,
+                        "usage_limit" => 1,
+                        "expiry" => [
+                            "start_time" => date('Y-m-d H:i O'),
+                            "duration" => 1,
+                            "unit" => "days"
+                        ],
+                        "enabled_payments" => [
+                            "gopay",
+                            "cimb_clicks",
+                            "bca_klikbca",
+                            "bca_klikpay",
+                            "bri_epay",
+                            "telkomsel_cash",
+                            "echannel",
+                            "permata_va",
+                            "other_va",
+                            "bca_va",
+                            "bni_va",
+                            "bri_va",
+                            "danamon_online",
+                            "shopeepay"
+                        ],
+                        "item_details" => $item_details
+                    ]);
+
+                $data = $response->json();
+
+                $order_id = $data["order_id"];
+                $database_id = strval($food_service_request->id);
+                $payment_url = $data["payment_url"];
+
+                $data = [
+                    "order_id" => $order_id,
+                    "database_id" => $database_id,
+                    "payment_url" => $payment_url,
+                ];
+
+                return $data;
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
