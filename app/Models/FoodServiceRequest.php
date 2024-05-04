@@ -18,6 +18,7 @@ class FoodServiceRequest extends Model
         'total',
         'payment_method',
         'is_paid',
+        'order_id',
     ];
 
     public function hotel(): BelongsTo
