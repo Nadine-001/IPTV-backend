@@ -35,7 +35,7 @@ class FoodServiceRequestController extends Controller
                 ->where('hotel_id', $hotel->id)
                 ->where('menu_id', $request->menu_id)
                 ->first();
-            
+
             if ($temp_cart) {
                 $temp_cart->update([
                     'qty' => $temp_cart->qty + 1,
@@ -324,6 +324,12 @@ class FoodServiceRequestController extends Controller
 
             date_default_timezone_set('Asia/Jakarta');
             if (strtolower($request->payment_method) == "scan qr") {
+                $order_id = date('Ymd') . strval($food_service_request->id);
+
+                $food_service_request->update([
+                    'order_id' => $order_id
+                ]);
+
                 $response = Http::withHeaders([
                     'Accept: application/json',
                     'Authorization' => 'Basic U0ItTWlkLXNlcnZlci1RS1F1dHZoaUFtUW1CeTktTjlKb0ZRaEM6',
@@ -331,9 +337,9 @@ class FoodServiceRequestController extends Controller
                 ])
                     ->post('https://api.sandbox.midtrans.com/v1/payment-links', [
                         "transaction_details" => [
-                            "order_id" => date('Ymd') . strval($food_service_request->id),
+                            "order_id" => $order_id,
                             "gross_amount" => $request->total,
-                            "payment_link_id" => date('Ymd') . strval($food_service_request->id)
+                            "payment_link_id" => $order_id
                         ],
                         "customer_required" => false,
                         "usage_limit" => 1,
@@ -389,5 +395,24 @@ class FoodServiceRequestController extends Controller
             'total' => $request->total,
             'payment_method' => $request->payment_method,
         ]);
+    }
+
+    public function notification(Request $request)
+    {
+        $server_key = config('midtrans.server_key');
+        $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $server_key);
+
+        $order_id = explode('-', $request->order_id);
+
+        if ($hashed == $request->signature_key) {
+            if ($request->transaction_status == 'settlement') {
+                $food_service_request = FoodServiceRequest::where('order_id', $order_id[0])->first();
+                $food_service_request->update([
+                    'is_paid' => 1
+                ]);
+            }
+        }
+
+        return response()->json('OK');
     }
 }
