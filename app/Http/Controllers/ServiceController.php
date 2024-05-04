@@ -470,6 +470,8 @@ class ServiceController extends Controller
         $transaction_data = [];
         try {
             $revenue = 0;
+            $qris_revenue = 0;
+            $cash_revenue = 0;
 
             foreach ($food_order_requests as $order_request) {
                 $television = Television::where('id', $order_request->television_id)->first();
@@ -491,6 +493,12 @@ class ServiceController extends Controller
                 ];
 
                 $revenue = $total + $revenue;
+
+                if (strtolower($payment_method) == 'cash') {
+                    $cash_revenue = $total + $cash_revenue;
+                } else if (strtolower($payment_method) == 'scan qr') {
+                    $qris_revenue = $total + $qris_revenue;
+                }
             }
         } catch (\Throwable $th) {
             return response()->json([
@@ -501,6 +509,8 @@ class ServiceController extends Controller
 
         return response()->json([
             'revenue' => $revenue,
+            'cash_revenue' => $cash_revenue,
+            'qris_revenue' => $qris_revenue,
             'transaction_data' => $transaction_data,
         ]);
     }
