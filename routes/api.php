@@ -63,6 +63,7 @@ Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
 // Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::class, 'decrease_item']);
 Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
+Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
 
 Route::group(['middleware' => 'firebase'], function () {
     Route::get('/profile', [AuthController::class, 'profile']);
