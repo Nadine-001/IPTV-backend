@@ -974,6 +974,7 @@ class ContentController extends Controller
         try {
             $menu_type = MenuType::where('id', $menu_type_id)->first();
             $menus = Menu::where('type', $menu_type->type)
+                ->where('hotel_id', $menu_type->hotel_id)
                 ->where('is_deleted', 0)
                 ->get();
 
