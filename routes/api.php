@@ -43,24 +43,18 @@ Route::get('/room_service', [RoomController::class, 'room_service']);
 // ROOM SERVICE REQUEST
 Route::post('/add_service_to_cart', [RoomServiceRequestController::class, 'add_to_cart']);
 Route::get('/service_cart', [RoomServiceRequestController::class, 'show_cart']);
-Route::put('/increase_item_request/{item_id}', [RoomServiceRequestController::class, 'increase_item']);
-Route::put('/decrease_item_request/{item_id}', [RoomServiceRequestController::class, 'decrease_item']);
 Route::delete('/delete_request/{item_id}', [RoomServiceRequestController::class, 'delete_request']);
 Route::post('/request_service', [RoomServiceRequestController::class, 'request_service']);
 
 // MENU
 Route::get('/ads_lips', [MenuController::class, 'ads_lips_menu']);
 Route::get('/menu_list', [MenuController::class, 'menu_list']);
-// Route::get('/list_menu', [MenuController::class, 'list_menu']);
 Route::get('/menu_type', [MenuController::class, 'menu_type']);
-// Route::get('/qr_code', [MenuController::class, 'qr_code']);
 Route::post('/payment_status', [MenuController::class, 'payment_status']);
 
 //FOOD ORDER REQUEST
 Route::post('/add_menu_to_cart', [FoodServiceRequestController::class, 'add_to_cart']);
 Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
-// Route::put('/increase_item_order/{item_id}', [FoodServiceRequestController::class, 'increase_item']);
-// Route::put('/decrease_item_order/{item_id}', [FoodServiceRequestController::class, 'decrease_item']);
 Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
