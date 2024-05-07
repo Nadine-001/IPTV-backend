@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('room_service_id')->index();
             $table->foreign('room_service_id')->references('id')->on('room_services');
             $table->integer('qty');
-            $table->string('note')->nullable();
             $table->timestamps();
         });
     }

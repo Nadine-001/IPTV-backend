@@ -33,7 +33,7 @@ class RoomServiceRequestController extends Controller
                 ->where('hotel_id', $hotel->id)
                 ->where('room_service_id', $request->service_id)
                 ->first();
-            
+
             if ($temp_cart) {
                 $temp_cart->update([
                     'qty' => $temp_cart->qty + 1,
@@ -44,7 +44,6 @@ class RoomServiceRequestController extends Controller
                     'television_id' => $television->id,
                     'room_service_id' => $request->service_id,
                     'qty' => 1,
-                    'note' => $request->note,
                 ]);
             }
         } catch (\Throwable $th) {
@@ -83,7 +82,6 @@ class RoomServiceRequestController extends Controller
                 $room_service_name = $room_service->name;
                 $room_service_image = $room_service->image;
                 $quantity = $cart->qty;
-                $note = $cart->note;
 
                 $request_list[] = [
                     'item_id' => $item_id,
@@ -91,7 +89,6 @@ class RoomServiceRequestController extends Controller
                     'room_service_name' => $room_service_name,
                     'room_service_image' => $room_service_image,
                     'quantity' => $quantity,
-                    'note' => $note,
                 ];
             }
         } catch (\Throwable $th) {

@@ -14,7 +14,6 @@ class RoomServiceRequestDetail extends Model
         'room_service_request_id',
         'room_service_id',
         'qty',
-        'note',
     ];
 
     public function room_service(): BelongsTo

@@ -40,14 +40,12 @@ class ServiceController extends Controller
 
                     $service_name = $room_service->name;
                     $service_image = $room_service->image;
-                    $request_note = $request_service->note;
                     $request_qty = $request_service->qty;
 
                     $request_detail[] = [
                         'service_id' => $room_service_id,
                         'service_name' => $service_name,
                         'service_image' => $service_image,
-                        'request_note' => $request_note,
                         'request_qty' => $request_qty,
                     ];
                 }
@@ -85,14 +83,12 @@ class ServiceController extends Controller
 
                 $service_name = $room_service->name;
                 $service_image = $room_service->image;
-                $request_note = $request_service->note;
                 $request_qty = $request_service->qty;
 
                 $request_list[] = [
                     'service_id' => $room_service_id,
                     'service_name' => $service_name,
                     'service_image' => $service_image,
-                    'request_note' => $request_note,
                     'request_qty' => $request_qty,
                 ];
             }
@@ -177,14 +173,12 @@ class ServiceController extends Controller
                     $service_image = $room_service->image;
 
                     $quantity = $request_service->qty;
-                    $note = $request_service->note;
 
                     $request_detail[] = [
                         'room_service_id' => $room_service_id,
                         'service_name' => $service_name,
                         'service_image' => $service_image,
                         'quantity' => $quantity,
-                        'note' => $note,
                     ];
                 }
 

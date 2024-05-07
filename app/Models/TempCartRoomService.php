@@ -15,7 +15,6 @@ class TempCartRoomService extends Model
         'television_id',
         'room_service_id',
         'qty',
-        'note',
     ];
 
     public function hotel(): BelongsTo
