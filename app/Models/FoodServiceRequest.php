@@ -17,6 +17,8 @@ class FoodServiceRequest extends Model
         'is_accepted',
         'total',
         'payment_method',
+        'qr_code',
+        'qr_code_expire_time',
         'is_paid',
         'order_id',
     ];

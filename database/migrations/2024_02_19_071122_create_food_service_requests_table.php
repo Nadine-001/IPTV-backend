@@ -21,6 +21,8 @@ return new class extends Migration
             $table->float('total');
             $table->string('payment_method');
             $table->string('order_id')->nullable();
+            $table->string('qr_code')->nullable();
+            $table->datetime('qr_code_expire_time')->nullable();
             $table->boolean('is_paid')->default(0);
             $table->timestamps();
         });
