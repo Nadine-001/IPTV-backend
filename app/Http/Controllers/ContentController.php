@@ -25,7 +25,7 @@ class ContentController extends Controller
             return response()->json($validator->errors(), 406);
         }
 
-        $hotel = Hotel::where('id', intval($hotel_id))->first();
+        $hotel = Hotel::where('id', $hotel_id)->first();
 
         try {
             $hotel->update([
@@ -43,7 +43,7 @@ class ContentController extends Controller
 
     public function greeting_content($hotel_id)
     {
-        $hotel = Hotel::where('id', intval($hotel_id))->first();
+        $hotel = Hotel::where('id', $hotel_id)->first();
 
         try {
             $hotel_greeting = $hotel->greeting;
@@ -61,7 +61,7 @@ class ContentController extends Controller
 
     public function hotel_about_data($hotel_id)
     {
-        $hotel = Hotel::where('id', intval($hotel_id))->first();
+        $hotel = Hotel::where('id', $hotel_id)->first();
 
         try {
             $hotel_name = $hotel->name;
@@ -93,7 +93,7 @@ class ContentController extends Controller
 
     public function hotel_about(Request $request, $hotel_id)
     {
-        $hotel = Hotel::where('id', intval($hotel_id))->first();
+        $hotel = Hotel::where('id', $hotel_id)->first();
 
         $validator = Validator::make($request->all(), [
             'hotel_class' => 'required',
@@ -365,7 +365,7 @@ class ContentController extends Controller
     public function hotel_facilities_delete($facility_id)
     {
         try {
-            $facility = HotelFacilities::where('id', intval($facility_id))->first();
+            $facility = HotelFacilities::where('id', $facility_id)->first();
             $facility->update([
                 'is_deleted' => true,
             ]);
@@ -642,7 +642,7 @@ class ContentController extends Controller
             return response()->json($validator->errors(), 406);
         }
 
-        $service = RoomService::where('id', intval($service_id))->first();
+        $service = RoomService::where('id', $service_id)->first();
 
         try {
             $service->update([
@@ -669,7 +669,7 @@ class ContentController extends Controller
             return response()->json($validator->errors(), 406);
         }
 
-        $service = RoomService::where('id', intval($service_id))->first();
+        $service = RoomService::where('id', $service_id)->first();
 
         try {
             $file_name = time() . " - " . $request->image->getClientOriginalName();
@@ -693,7 +693,7 @@ class ContentController extends Controller
     public function amenities_delete(Request $request, $service_id)
     {
         try {
-            $service = RoomService::where('id', intval($service_id))->first();
+            $service = RoomService::where('id', $service_id)->first();
             $service->update([
                 'is_deleted' => true,
             ]);
@@ -1013,7 +1013,7 @@ class ContentController extends Controller
     public function menu_data($menu_id)
     {
         try {
-            $menu = Menu::where('id', intval($menu_id))->first();
+            $menu = Menu::where('id', $menu_id)->first();
 
             $menu_id = $menu->id;
             $menu_type = $menu->type;
@@ -1054,7 +1054,7 @@ class ContentController extends Controller
             return response()->json($validator->errors(), 406);
         }
 
-        $menu = Menu::where('id', intval($menu_id))->first();
+        $menu = Menu::where('id', $menu_id)->first();
 
         try {
             $menu->update([
@@ -1084,7 +1084,7 @@ class ContentController extends Controller
             return response()->json($validator->errors(), 406);
         }
 
-        $menu = Menu::where('id', intval($menu_id))->first();
+        $menu = Menu::where('id', $menu_id)->first();
 
         try {
             $file_name = time() . " - " . $request->image->getClientOriginalName();
