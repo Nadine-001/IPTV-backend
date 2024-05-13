@@ -10,6 +10,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomServiceRequestController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TelevisionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/sign_up', [AuthController::class, 'sign_up']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot_password', [AuthController::class, 'forgot_password']);
+
+Route::get('/channel', [TelevisionController::class, 'channel']);
 
 // HOTEL
 Route::get('/home', [HotelController::class, 'home']);
