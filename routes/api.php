@@ -50,13 +50,17 @@ Route::post('/request_service', [RoomServiceRequestController::class, 'request_s
 Route::get('/ads_lips', [MenuController::class, 'ads_lips_menu']);
 Route::get('/menu_list', [MenuController::class, 'menu_list']);
 Route::get('/menu_type', [MenuController::class, 'menu_type']);
-Route::post('/payment_status', [MenuController::class, 'payment_status']);
 
 //FOOD ORDER REQUEST
 Route::post('/add_menu_to_cart', [FoodServiceRequestController::class, 'add_to_cart']);
 Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
 Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
+Route::post('/save_qr_code', [FoodServiceRequestController::class, 'save_qr_code']);
+Route::post('/payment_status', [FoodServiceRequestController::class, 'payment_status']);
+Route::get('/payment_method', [FoodServiceRequestController::class, 'get_payment_method']);
+Route::put('/payment_method', [FoodServiceRequestController::class, 'change_payment_method']);
+Route::get('/show_qr_code', [FoodServiceRequestController::class, 'show_qr_code']);
 Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
 
 Route::group(['middleware' => 'firebase'], function () {
