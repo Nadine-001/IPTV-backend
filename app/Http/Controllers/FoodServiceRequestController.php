@@ -29,24 +29,34 @@ class FoodServiceRequestController extends Controller
 
         try {
             $television = Television::where('mac_address', $request->mac_address)->first();
-            $hotel = Hotel::where('id', $television->hotel_id)->first();
 
-            $temp_cart = TempCartFoodService::where('television_id', $television->id)
-                ->where('hotel_id', $hotel->id)
-                ->where('menu_id', $request->menu_id)
+            $unpaid_order = FoodServiceRequest::where('television_id', $television->id)
+                ->where('payment_method', 'Scan QR')
+                ->where('is_paid', 0)
                 ->first();
 
-            if ($temp_cart) {
-                $temp_cart->update([
-                    'qty' => $temp_cart->qty + 1,
-                ]);
+            if (!$unpaid_order) {
+                $hotel = Hotel::where('id', $television->hotel_id)->first();
+
+                $temp_cart = TempCartFoodService::where('television_id', $television->id)
+                    ->where('hotel_id', $hotel->id)
+                    ->where('menu_id', $request->menu_id)
+                    ->first();
+
+                if ($temp_cart) {
+                    $temp_cart->update([
+                        'qty' => $temp_cart->qty + 1,
+                    ]);
+                } else {
+                    TempCartFoodService::create([
+                        'hotel_id' => $hotel->id,
+                        'television_id' => $television->id,
+                        'menu_id' => $request->menu_id,
+                        'qty' => 1,
+                    ]);
+                }
             } else {
-                TempCartFoodService::create([
-                    'hotel_id' => $hotel->id,
-                    'television_id' => $television->id,
-                    'menu_id' => $request->menu_id,
-                    'qty' => 1,
-                ]);
+                return response()->json('You need to complete the payment of previous order first.', 402);
             }
         } catch (\Throwable $th) {
             return response()->json([
@@ -313,16 +323,6 @@ class FoodServiceRequestController extends Controller
 
             DB::commit();
 
-            // $item_parent = TempCartFoodService::where('id', $item->temp_cart_food_service_id)->first();
-            // $deleted = $item_parent->delete();
-
-            // if (!$deleted) {
-            //     return response()->json([
-            //         "message" => "failed delete item"
-            //     ], 500);
-            // }
-
-            date_default_timezone_set('Asia/Jakarta');
             if (strtolower($request->payment_method) == "scan qr") {
                 $order_id = date('Ymd') . strval($food_service_request->id);
 
@@ -330,6 +330,7 @@ class FoodServiceRequestController extends Controller
                     'order_id' => $order_id
                 ]);
 
+                date_default_timezone_set('Asia/Jakarta');
                 $response = Http::withHeaders([
                     'Accept: application/json',
                     'Authorization' => 'Basic U0ItTWlkLXNlcnZlci1RS1F1dHZoaUFtUW1CeTktTjlKb0ZRaEM6',
@@ -379,7 +380,7 @@ class FoodServiceRequestController extends Controller
                     "payment_url" => $payment_url,
                 ];
 
-                return $data;
+                return response()->json($data);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -394,25 +395,290 @@ class FoodServiceRequestController extends Controller
             'orders' => $request->orders,
             'total' => $request->total,
             'payment_method' => $request->payment_method,
+            'database_id' => $food_service_request->id,
         ]);
+    }
+
+    public function save_qr_code(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'food_request_id' => 'required',
+            'qr_code' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
+
+            $file_name = $request->food_request_id . ' - ' . $request->qr_code->getClientOriginalName();
+            $file_name = str_replace(' ', '', $file_name);
+            $path_qr_code = asset('uploads/payment/' . $file_name);
+            $request->qr_code->move(public_path('uploads/payment/'), $file_name);
+
+            date_default_timezone_set('Asia/Jakarta');
+            $food_service_request->update([
+                'qr_code' => $path_qr_code,
+                'qr_code_expire_time' => date('Y-m-d H:i:s', strtotime('+1 day')),
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to save QR Code',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('QR Code saved succesfully');
+    }
+
+    public function payment_status(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'food_request_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
+
+            $is_paid = $food_service_request->is_paid;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to get payment status',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json($is_paid);
+    }
+
+    public function show_qr_code(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'food_request_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
+
+            $is_paid = $food_service_request->is_paid;
+            if ($is_paid == 0) {
+                $qr_code_expire_time = $food_service_request->qr_code_expire_time;
+
+                if ($qr_code_expire_time <= date(now())) {
+                    $qr_code = $food_service_request->qr_code;
+
+                    $path_qr_code = public_path("uploads/payment/" . $qr_code);
+                    if (file_exists($path_qr_code)) {
+                        unlink($path_qr_code);
+                    }
+
+                    $food_service_request->update([
+                        'qr_code' => NULL
+                    ]);
+
+                    $qr_code = 'QR Code is expired.';
+                    $status_code = 404;
+                } else {
+                    $qr_code = $food_service_request->qr_code;
+                    $status_code = 200;
+                }
+            } else {
+                return response()->json($is_paid);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to save QR Code',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json($qr_code, $status_code);
+    }
+
+    public function get_payment_method(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'food_request_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
+
+            $payment_method = $food_service_request->payment_method;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to get payment method',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json($payment_method);
+    }
+
+    public function change_payment_method(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'food_request_id' => 'required',
+            'payment_method' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
+
+            if (strtolower($food_service_request->payment_method) == 'scan qr' && strtolower($request->payment_method) == 'cash') {
+                $food_service_request->update([
+                    'payment_method' => 'Cash',
+                    'order_id' => NULL,
+                    'qr_code' => NULL,
+                    'qr_code_expire_time' => NULL,
+                ]);
+
+                return response()->json([
+                    'food_request_id' => $food_service_request->id,
+                    'payment_method' => $food_service_request->payment_method,
+                ]);
+            } else if (strtolower($food_service_request->payment_method) == 'cash' && strtolower($request->payment_method) == 'scan qr') {
+                $orders = FoodServiceRequestDetail::where('food_service_request_id', $request->food_request_id)->get();
+
+                $item_details = [];
+                foreach ($orders as $order) {
+                    $menu_id = $order->menu_id;
+                    $menu = Menu::where('id', $menu_id)->first();
+
+                    $item_details[] = [
+                        "id" => strval($menu_id),
+                        "name" => $menu->name,
+                        "price" => $menu->price,
+                        "quantity" => $order->qty
+                    ];
+                }
+
+                $order_id = date('Ymd') . strval($food_service_request->id);
+
+                $food_service_request->update([
+                    'payment_method' => 'Scan QR',
+                    'order_id' => $order_id
+                ]);
+
+                date_default_timezone_set('Asia/Jakarta');
+                $response = Http::withHeaders([
+                    'Accept: application/json',
+                    'Authorization' => 'Basic U0ItTWlkLXNlcnZlci1RS1F1dHZoaUFtUW1CeTktTjlKb0ZRaEM6',
+                    'Content-Type' => 'application/json',
+                ])
+                    ->post('https://api.sandbox.midtrans.com/v1/payment-links', [
+                        "transaction_details" => [
+                            "order_id" => $order_id,
+                            "gross_amount" => $food_service_request->total,
+                            "payment_link_id" => $order_id
+                        ],
+                        "customer_required" => false,
+                        "usage_limit" => 1,
+                        "expiry" => [
+                            "start_time" => date('Y-m-d H:i O'),
+                            "duration" => 1,
+                            "unit" => "days"
+                        ],
+                        "enabled_payments" => [
+                            "gopay",
+                            "cimb_clicks",
+                            "bca_klikbca",
+                            "bca_klikpay",
+                            "bri_epay",
+                            "telkomsel_cash",
+                            "echannel",
+                            "permata_va",
+                            "other_va",
+                            "bca_va",
+                            "bni_va",
+                            "bri_va",
+                            "danamon_online",
+                            "shopeepay"
+                        ],
+                        "item_details" => $item_details
+                    ]);
+
+                $data = $response->json();
+
+                $order_id = $data["order_id"];
+                $database_id = strval($request->food_request_id);
+                $payment_url = $data["payment_url"];
+
+                $data = [
+                    "order_id" => $order_id,
+                    "database_id" => $database_id,
+                    "payment_url" => $payment_url,
+                ];
+
+                return response()->json($data);
+            } else {
+                return response()->json('nothing\'s changed.');
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to update payment method',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
     }
 
     public function notification(Request $request)
     {
-        $server_key = config('midtrans.server_key');
-        $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $server_key);
+        try {
+            $server_key = config('midtrans.server_key');
+            $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $server_key);
 
-        $order_id = explode('-', $request->order_id);
+            $order_id = explode('-', $request->order_id);
 
-        if ($hashed == $request->signature_key) {
-            if ($request->transaction_status == 'settlement') {
-                $food_service_request = FoodServiceRequest::where('order_id', $order_id[0])->first();
-                $food_service_request->update([
-                    'is_paid' => 1
-                ]);
+            if ($hashed == $request->signature_key) {
+                if ($request->transaction_status == 'settlement') {
+                    $food_service_request = FoodServiceRequest::where('order_id', $order_id[0])->first();
+
+                    $path_qr_code = public_path('uploads\payment\\' . basename(parse_url($food_service_request->qr_code, PHP_URL_PATH)));
+                    if (file_exists($path_qr_code)) {
+                        unlink($path_qr_code);
+                    }
+
+                    $food_service_request->update([
+                        'is_paid' => 1,
+                        'qr_code' => NULL,
+                        'qr_code_expire_time' => NULL,
+                    ]);
+
+                    return response()->json('OK');
+                }
             }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to delete QR Code',
+                'errors' => $th->getMessage()
+            ], 400);
         }
 
-        return response()->json('OK');
+        return response()->json('Something went wrong.', 400);
     }
 }
