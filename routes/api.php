@@ -59,7 +59,6 @@ Route::post('/add_menu_to_cart', [FoodServiceRequestController::class, 'add_to_c
 Route::get('/menu_cart', [FoodServiceRequestController::class, 'show_cart']);
 Route::delete('/delete_order/{item_id}', [FoodServiceRequestController::class, 'delete_order']);
 Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
-Route::post('/save_qr_code', [FoodServiceRequestController::class, 'save_qr_code']);
 Route::post('/payment_status', [FoodServiceRequestController::class, 'payment_status']);
 Route::get('/payment_method', [FoodServiceRequestController::class, 'get_payment_method']);
 Route::put('/payment_method', [FoodServiceRequestController::class, 'change_payment_method']);

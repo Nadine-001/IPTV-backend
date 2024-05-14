@@ -406,45 +406,6 @@ class FoodServiceRequestController extends Controller
         ]);
     }
 
-    public function save_qr_code(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'food_request_id' => 'required',
-            'qr_code' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        try {
-            $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
-
-            $file_name = $request->food_request_id . ' - ' . $request->qr_code->getClientOriginalName();
-            $file_name = str_replace(' ', '', $file_name);
-            $path_qr_code = asset('uploads/payment/' . $file_name);
-            $request->qr_code->move(public_path('uploads/payment/'), $file_name);
-
-            date_default_timezone_set('Asia/Jakarta');
-            $food_service_request->update([
-                'qr_code' => $path_qr_code,
-                'qr_code_expire_time' => date('Y-m-d H:i:s', strtotime('+1 day')),
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'failed to save QR Code',
-                'errors' => $th->getMessage()
-            ], 400);
-        }
-
-        return response()->json([
-            'food_request_id' => $food_service_request->id,
-            'qr_code' => $food_service_request->qr_code,
-            'qr_code_expire_time' => $food_service_request->qr_code_expire_time,
-        ]);
-    }
-
     public function payment_status(Request $request)
     {
         $validator = Validator::make($request->all(), [
