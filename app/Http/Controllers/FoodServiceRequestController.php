@@ -56,7 +56,9 @@ class FoodServiceRequestController extends Controller
                     ]);
                 }
             } else {
-                return response()->json('You need to complete the payment of previous order first.', 402);
+                return response()->json([
+                    'message' => 'you need to complete the payment of previous order first.'
+                ], 402);
             }
         } catch (\Throwable $th) {
             return response()->json([
@@ -374,6 +376,11 @@ class FoodServiceRequestController extends Controller
                 $database_id = strval($food_service_request->id);
                 $payment_url = $data["payment_url"];
 
+                $food_service_request->update([
+                    'qr_code' => $payment_url,
+                    'qr_code_expire_time' => date('Y-m-d H:i:s'),
+                ]);
+
                 $data = [
                     "order_id" => $order_id,
                     "database_id" => $database_id,
@@ -480,19 +487,13 @@ class FoodServiceRequestController extends Controller
 
             $payment_method = $food_service_request->payment_method;
             $is_paid = $food_service_request->is_paid;
+
             if (strtolower($payment_method) == 'scan qr') {
                 if ($is_paid == 0) {
                     $qr_code_expire_time = $food_service_request->qr_code_expire_time;
 
                     date_default_timezone_set('Asia/Jakarta');
                     if ($qr_code_expire_time <= date(now())) {
-                        $qr_code = $food_service_request->qr_code;
-
-                        $path_qr_code = public_path("uploads/payment/" . $qr_code);
-                        if (file_exists($path_qr_code)) {
-                            unlink($path_qr_code);
-                        }
-
                         $food_service_request->update([
                             'qr_code' => NULL
                         ]);
@@ -655,6 +656,11 @@ class FoodServiceRequestController extends Controller
                     $database_id = strval($request->food_request_id);
                     $payment_url = $data["payment_url"];
 
+                    $food_service_request->update([
+                        'qr_code' => $payment_url,
+                        'qr_code_expire_time' => date('Y-m-d H:i:s'),
+                    ]);
+
                     $data = [
                         "order_id" => $order_id,
                         "database_id" => $database_id,
@@ -692,11 +698,6 @@ class FoodServiceRequestController extends Controller
             if ($hashed == $request->signature_key) {
                 if ($request->transaction_status == 'settlement') {
                     $food_service_request = FoodServiceRequest::where('order_id', $order_id[0])->first();
-
-                    $path_qr_code = public_path('uploads\payment\\' . basename(parse_url($food_service_request->qr_code, PHP_URL_PATH)));
-                    if (file_exists($path_qr_code)) {
-                        unlink($path_qr_code);
-                    }
 
                     $food_service_request->update([
                         'is_paid' => 1,
