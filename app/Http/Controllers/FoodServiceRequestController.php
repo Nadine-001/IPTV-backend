@@ -480,33 +480,38 @@ class FoodServiceRequestController extends Controller
 
             $payment_method = $food_service_request->payment_method;
             $is_paid = $food_service_request->is_paid;
-            if (strtolower($payment_method) == 'scan qr' && $is_paid == 0) {
-                $qr_code_expire_time = $food_service_request->qr_code_expire_time;
+            if (strtolower($payment_method) == 'scan qr') {
+                if ($is_paid == 0) {
+                    $qr_code_expire_time = $food_service_request->qr_code_expire_time;
 
-                date_default_timezone_set('Asia/Jakarta');
-                if ($qr_code_expire_time <= date(now())) {
-                    $qr_code = $food_service_request->qr_code;
+                    date_default_timezone_set('Asia/Jakarta');
+                    if ($qr_code_expire_time <= date(now())) {
+                        $qr_code = $food_service_request->qr_code;
 
-                    $path_qr_code = public_path("uploads/payment/" . $qr_code);
-                    if (file_exists($path_qr_code)) {
-                        unlink($path_qr_code);
+                        $path_qr_code = public_path("uploads/payment/" . $qr_code);
+                        if (file_exists($path_qr_code)) {
+                            unlink($path_qr_code);
+                        }
+
+                        $food_service_request->update([
+                            'qr_code' => NULL
+                        ]);
+
+                        $qr_code = 'The QR Code is expired.';
+                        $status_code = 404;
+                    } else {
+                        $qr_code = $food_service_request->qr_code;
+                        $status_code = 200;
                     }
-
-                    $food_service_request->update([
-                        'qr_code' => NULL
-                    ]);
-
-                    $qr_code = 'QR Code is expired.';
-                    $status_code = 404;
                 } else {
-                    $qr_code = $food_service_request->qr_code;
-                    $status_code = 200;
+                    return response()->json([
+                        'message' => 'this transaction has been successful, you can not change the payment method.'
+                    ], 400);
                 }
             } else {
                 return response()->json([
-                    'payment_method' => $payment_method,
-                    'payment_status' => $is_paid,
-                ]);
+                    'message' => 'the payment method is cash.'
+                ], 400);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -534,7 +539,14 @@ class FoodServiceRequestController extends Controller
         try {
             $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
 
-            $payment_method = $food_service_request->payment_method;
+            $is_paid = $food_service_request->is_paid;
+            if ($is_paid == 0) {
+                $payment_method = $food_service_request->payment_method;
+            } else {
+                return response()->json([
+                    'message' => 'this transaction has been successful, you can not change the payment method.'
+                ], 400);
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
@@ -562,94 +574,103 @@ class FoodServiceRequestController extends Controller
         try {
             $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
 
-            if (strtolower($food_service_request->payment_method) == 'scan qr' && strtolower($request->payment_method) == 'cash') {
-                $food_service_request->update([
-                    'payment_method' => 'Cash',
-                    'order_id' => NULL,
-                    'qr_code' => NULL,
-                    'qr_code_expire_time' => NULL,
-                ]);
-
-                return response()->json([
-                    'food_request_id' => $food_service_request->id,
-                    'payment_method' => $food_service_request->payment_method,
-                ]);
-            } else if (strtolower($food_service_request->payment_method) == 'cash' && strtolower($request->payment_method) == 'scan qr') {
-                $orders = FoodServiceRequestDetail::where('food_service_request_id', $request->food_request_id)->get();
-
-                $item_details = [];
-                foreach ($orders as $order) {
-                    $menu_id = $order->menu_id;
-                    $menu = Menu::where('id', $menu_id)->first();
-
-                    $item_details[] = [
-                        "id" => strval($menu_id),
-                        "name" => $menu->name,
-                        "price" => $menu->price,
-                        "quantity" => $order->qty
-                    ];
-                }
-
-                $order_id = date('Ymd') . strval($food_service_request->id);
-
-                $food_service_request->update([
-                    'payment_method' => 'Scan QR',
-                    'order_id' => $order_id
-                ]);
-
-                date_default_timezone_set('Asia/Jakarta');
-                $response = Http::withHeaders([
-                    'Accept: application/json',
-                    'Authorization' => 'Basic U0ItTWlkLXNlcnZlci1RS1F1dHZoaUFtUW1CeTktTjlKb0ZRaEM6',
-                    'Content-Type' => 'application/json',
-                ])
-                    ->post('https://api.sandbox.midtrans.com/v1/payment-links', [
-                        "transaction_details" => [
-                            "order_id" => $order_id,
-                            "gross_amount" => $food_service_request->total,
-                            "payment_link_id" => $order_id
-                        ],
-                        "customer_required" => false,
-                        "usage_limit" => 1,
-                        "expiry" => [
-                            "start_time" => date('Y-m-d H:i O'),
-                            "duration" => 1,
-                            "unit" => "days"
-                        ],
-                        "enabled_payments" => [
-                            "gopay",
-                            "cimb_clicks",
-                            "bca_klikbca",
-                            "bca_klikpay",
-                            "bri_epay",
-                            "telkomsel_cash",
-                            "echannel",
-                            "permata_va",
-                            "other_va",
-                            "bca_va",
-                            "bni_va",
-                            "bri_va",
-                            "danamon_online",
-                            "shopeepay"
-                        ],
-                        "item_details" => $item_details
+            $is_paid = $food_service_request->is_paid;
+            if ($is_paid == 0) {
+                if (strtolower($food_service_request->payment_method) == 'scan qr' && strtolower($request->payment_method) == 'cash') {
+                    $food_service_request->update([
+                        'payment_method' => 'Cash',
+                        'order_id' => NULL,
+                        'qr_code' => NULL,
+                        'qr_code_expire_time' => NULL,
                     ]);
 
-                $data = $response->json();
+                    return response()->json([
+                        'food_request_id' => $food_service_request->id,
+                        'payment_method' => $food_service_request->payment_method,
+                    ]);
+                } else if (strtolower($food_service_request->payment_method) == 'cash' && strtolower($request->payment_method) == 'scan qr') {
+                    $orders = FoodServiceRequestDetail::where('food_service_request_id', $request->food_request_id)->get();
 
-                $order_id = $data["order_id"];
-                $database_id = strval($request->food_request_id);
-                $payment_url = $data["payment_url"];
+                    $item_details = [];
+                    foreach ($orders as $order) {
+                        $menu_id = $order->menu_id;
+                        $menu = Menu::where('id', $menu_id)->first();
 
-                $data = [
-                    "order_id" => $order_id,
-                    "database_id" => $database_id,
-                    "payment_url" => $payment_url,
-                ];
+                        $item_details[] = [
+                            "id" => strval($menu_id),
+                            "name" => $menu->name,
+                            "price" => $menu->price,
+                            "quantity" => $order->qty
+                        ];
+                    }
 
-                return response()->json($data);
+                    $order_id = date('Ymd') . strval($food_service_request->id);
+
+                    $food_service_request->update([
+                        'payment_method' => 'Scan QR',
+                        'order_id' => $order_id
+                    ]);
+
+                    date_default_timezone_set('Asia/Jakarta');
+                    $response = Http::withHeaders([
+                        'Accept: application/json',
+                        'Authorization' => 'Basic U0ItTWlkLXNlcnZlci1RS1F1dHZoaUFtUW1CeTktTjlKb0ZRaEM6',
+                        'Content-Type' => 'application/json',
+                    ])
+                        ->post('https://api.sandbox.midtrans.com/v1/payment-links', [
+                            "transaction_details" => [
+                                "order_id" => $order_id,
+                                "gross_amount" => $food_service_request->total,
+                                "payment_link_id" => $order_id
+                            ],
+                            "customer_required" => false,
+                            "usage_limit" => 1,
+                            "expiry" => [
+                                "start_time" => date('Y-m-d H:i O'),
+                                "duration" => 1,
+                                "unit" => "days"
+                            ],
+                            "enabled_payments" => [
+                                "gopay",
+                                "cimb_clicks",
+                                "bca_klikbca",
+                                "bca_klikpay",
+                                "bri_epay",
+                                "telkomsel_cash",
+                                "echannel",
+                                "permata_va",
+                                "other_va",
+                                "bca_va",
+                                "bni_va",
+                                "bri_va",
+                                "danamon_online",
+                                "shopeepay"
+                            ],
+                            "item_details" => $item_details
+                        ]);
+
+                    $data = $response->json();
+
+                    $order_id = $data["order_id"];
+                    $database_id = strval($request->food_request_id);
+                    $payment_url = $data["payment_url"];
+
+                    $data = [
+                        "order_id" => $order_id,
+                        "database_id" => $database_id,
+                        "payment_url" => $payment_url,
+                    ];
+
+                    return response()->json($data);
+                } else {
+                    return response()->json([
+                        'message' => 'nothing\'s changed.'
+                    ], 400);
+                }
             } else {
-                return response()->json('nothing\'s changed.');
+                return response()->json([
+                    'message' => 'this transaction has been successful, you can not change the payment method.'
+                ], 400);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
