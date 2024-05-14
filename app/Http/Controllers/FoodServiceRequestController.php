@@ -431,7 +431,11 @@ class FoodServiceRequestController extends Controller
             ], 400);
         }
 
-        return response()->json('QR Code saved succesfully');
+        return response()->json([
+            'food_request_id' => $food_service_request->id,
+            'qr_code' => $food_service_request->qr_code,
+            'qr_code_expire_time' => $food_service_request->qr_code_expire_time,
+        ]);
     }
 
     public function payment_status(Request $request)
@@ -456,7 +460,9 @@ class FoodServiceRequestController extends Controller
             ], 400);
         }
 
-        return response()->json($is_paid);
+        return response()->json([
+            'payment_status' => $is_paid
+        ]);
     }
 
     public function show_qr_code(Request $request)
@@ -472,10 +478,12 @@ class FoodServiceRequestController extends Controller
         try {
             $food_service_request = FoodServiceRequest::where('id', $request->food_request_id)->first();
 
+            $payment_method = $food_service_request->payment_method;
             $is_paid = $food_service_request->is_paid;
-            if ($is_paid == 0) {
+            if (strtolower($payment_method) == 'scan qr' && $is_paid == 0) {
                 $qr_code_expire_time = $food_service_request->qr_code_expire_time;
 
+                date_default_timezone_set('Asia/Jakarta');
                 if ($qr_code_expire_time <= date(now())) {
                     $qr_code = $food_service_request->qr_code;
 
@@ -495,17 +503,22 @@ class FoodServiceRequestController extends Controller
                     $status_code = 200;
                 }
             } else {
-                return response()->json($is_paid);
+                return response()->json([
+                    'payment_method' => $payment_method,
+                    'payment_status' => $is_paid,
+                ]);
             }
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
-                'message' => 'failed to save QR Code',
+                'message' => 'failed to show QR Code',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json($qr_code, $status_code);
+        return response()->json([
+            'qr_code' => $qr_code
+        ], $status_code);
     }
 
     public function get_payment_method(Request $request)
@@ -530,7 +543,9 @@ class FoodServiceRequestController extends Controller
             ], 400);
         }
 
-        return response()->json($payment_method);
+        return response()->json([
+            'payment_method' => $payment_method
+        ]);
     }
 
     public function change_payment_method(Request $request)
