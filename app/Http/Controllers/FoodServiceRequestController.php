@@ -378,7 +378,7 @@ class FoodServiceRequestController extends Controller
 
                 $food_service_request->update([
                     'qr_code' => $payment_url,
-                    'qr_code_expire_time' => date('Y-m-d H:i:s'),
+                    'qr_code_expire_time' => date('Y-m-d H:i:s', strtotime('+1 day')),
                 ]);
 
                 $data = [
@@ -619,7 +619,7 @@ class FoodServiceRequestController extends Controller
 
                     $food_service_request->update([
                         'qr_code' => $payment_url,
-                        'qr_code_expire_time' => date('Y-m-d H:i:s'),
+                        'qr_code_expire_time' => date('Y-m-d H:i:s', strtotime('+1 day')),
                     ]);
 
                     $data = [
