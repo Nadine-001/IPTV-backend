@@ -62,6 +62,7 @@ Route::post('/food_order', [FoodServiceRequestController::class, 'food_order']);
 Route::post('/payment_status', [FoodServiceRequestController::class, 'payment_status']);
 Route::get('/payment_method', [FoodServiceRequestController::class, 'get_payment_method']);
 Route::put('/payment_method', [FoodServiceRequestController::class, 'change_payment_method']);
+Route::get('/pending_transaction', [FoodServiceRequestController::class, 'pending_transaction']);
 Route::get('/show_qr_code', [FoodServiceRequestController::class, 'show_qr_code']);
 Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
 

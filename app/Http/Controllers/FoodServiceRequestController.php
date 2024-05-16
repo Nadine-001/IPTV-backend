@@ -433,6 +433,63 @@ class FoodServiceRequestController extends Controller
         ]);
     }
 
+    public function pending_transaction(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'mac_address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $television = Television::where('mac_address', $request->mac_address)->first();
+
+            $food_service_request = FoodServiceRequest::where('television_id', $television->id)
+                ->where('payment_method', 'Scan QR')
+                ->where('is_paid', 0)
+                ->first();
+
+            $orders = FoodServiceRequestDetail::where('food_service_request_id', $food_service_request->id)->get();
+
+            $unpaid_order = [];
+            foreach ($orders as $order) {
+                $menu_id = $order->menu_id;
+                $menu = Menu::where('id', $menu_id)->first();
+
+                $item_id = $order->id;
+                $menu_id = $menu_id;
+                $menu_name = $menu->name;
+                $menu_description = $menu->description;
+                $menu_price = $menu->price;
+                $menu_image = $menu->image;
+                $quantity = $order->qty;
+
+                $unpaid_order[] = [
+                    'item_id' => $item_id,
+                    'menu_id' => $menu_id,
+                    'menu_name' => $menu_name,
+                    'menu_description' => $menu_description,
+                    'menu_price' => $menu_price,
+                    'menu_image' => $menu_image,
+                    'quantity' => $quantity,
+                ];
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'failed to show QR Code',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'unpaid_order' => $unpaid_order,
+            'total' => $food_service_request->total
+        ]);
+    }
+
     public function show_qr_code(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -456,18 +513,19 @@ class FoodServiceRequestController extends Controller
                     date_default_timezone_set('Asia/Jakarta');
                     if ($qr_code_expire_time <= date(now())) {
                         $food_service_request->update([
-                            'qr_code' => NULL
+                            'qr_code' => NULL,
+                            'is_paid' => NULL
                         ]);
 
-                        $qr_code = 'The QR Code is expired.';
+                        $payment_link = 'The payment link is expired.';
                         $status_code = 404;
                     } else {
-                        $qr_code = $food_service_request->qr_code;
+                        $payment_link = $food_service_request->qr_code;
                         $status_code = 200;
                     }
                 } else {
                     return response()->json([
-                        'message' => 'this transaction has been successful, you can not change the payment method.'
+                        'message' => 'this transaction has been paid.'
                     ], 400);
                 }
             } else {
@@ -484,7 +542,7 @@ class FoodServiceRequestController extends Controller
         }
 
         return response()->json([
-            'qr_code' => $qr_code
+            'payment_link' => $payment_link
         ], $status_code);
     }
 
