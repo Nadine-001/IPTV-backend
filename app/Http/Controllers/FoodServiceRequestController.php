@@ -486,7 +486,8 @@ class FoodServiceRequestController extends Controller
 
         return response()->json([
             'unpaid_order' => $unpaid_order,
-            'total' => $food_service_request->total
+            'total' => $food_service_request->total,
+            'food_request_id' => $food_service_request->id
         ]);
     }
 
