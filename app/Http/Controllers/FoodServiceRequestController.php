@@ -517,8 +517,9 @@ class FoodServiceRequestController extends Controller
                             'is_paid' => NULL
                         ]);
 
-                        $payment_link = 'The payment link is expired.';
-                        $status_code = 404;
+                        return response()->json([
+                            'message' => 'the payment link is expired.'
+                        ], 404);
                     } else {
                         $payment_link = $food_service_request->qr_code;
                         $status_code = 200;
