@@ -15,28 +15,29 @@ class ReceptionistMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
+    // : Response
     {
-        $response = (object) [];
-        $token = $request->bearerToken();
-        $response->token = $token;
+        // $response = (object) [];
+        // $token = $request->bearerToken();
+        // $response->token = $token;
 
-        $auth = app('firebase.auth');
-        try {
-            $verifiedIdToken = $auth->verifyIdToken($token);
-        } catch (FailedToVerifyToken $e) {
-            return response()->json([
-                'message' => 'invalid token',
-                'error' => $e->getMessage()
-            ]);
-        }
-        
-        $email = $verifiedIdToken->claims()->get('email');
+        // $auth = app('firebase.auth');
+        // try {
+        //     $verifiedIdToken = $auth->verifyIdToken($token);
+        // } catch (FailedToVerifyToken $e) {
+        //     return response()->json([
+        //         'message' => 'invalid token',
+        //         'error' => $e->getMessage()
+        //     ]);
+        // }
 
-        $admin = User::where('email', $email)->first();
-        $role_id = $admin->role_id;
+        // $email = $verifiedIdToken->claims()->get('email');
 
-        if ($role_id == 2 || $role_id >= 99) {
+        // $admin = User::where('email', $email)->first();
+        // $role_id = $admin->role_id;
+
+        if ($request->user() && $request->user()->role_id == 2 || $request->user() && $request->user()->role_id >= 99) {
             return $next($request);
         }
 
