@@ -18,6 +18,7 @@ class Television extends Model
         'mac_address',
         'guest_name',
         'guest_gender',
+        'check_in',
         'is_active',
     ];
 
