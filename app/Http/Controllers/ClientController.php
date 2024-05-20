@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GuestHistory;
 use App\Models\Hotel;
 use App\Models\Role;
 use App\Models\Television;
@@ -83,15 +84,16 @@ class ClientController extends Controller
         try {
             $role = Role::where('role_name', $request->role)->first();
 
+            $new_user = $this->auth->createUserWithEmailAndPassword($email, $password);
+            $uid = $new_user->uid;
+
             User::create([
                 'hotel_id' => $hotel_id,
                 'role_id' => $role->id,
                 'email' => $email,
                 'password' => Hash::make($request->password),
+                'uid' => $uid,
             ]);
-
-            $new_user = $this->auth->createUserWithEmailAndPassword($email, $password);
-            $uid = $new_user->uid;
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to add admin',
@@ -499,6 +501,37 @@ class ClientController extends Controller
 
         return response()->json([
             'mac_address_list' => $mac_address_list
+        ]);
+    }
+
+    public function guest_list(Request $request, $hotel_id)
+    {
+        try {
+            $histories = GuestHistory::where('hotel_id', $hotel_id)->get();
+
+            $guest_history = [];
+            foreach ($histories as $history) {
+                $room_number = $history->room_number;
+                $guest_name = $history->guest_name;
+                $check_in = $history->check_in;
+                $check_out = $history->check_out;
+
+                $guest_history[] = [
+                    'room_number' => $room_number,
+                    'guest_name' => $guest_name,
+                    'check_in' => $check_in,
+                    'check_out' => $check_out,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save check out time',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'guest_history' => $guest_history
         ]);
     }
 }
