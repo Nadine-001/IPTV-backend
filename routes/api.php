@@ -66,10 +66,17 @@ Route::get('/pending_transaction', [FoodServiceRequestController::class, 'pendin
 Route::get('/show_qr_code', [FoodServiceRequestController::class, 'show_qr_code']);
 Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
 
-Route::group(['middleware' => 'firebase'], function () {
+// Route::group(['middleware' => 'firebase'], function () {
+// Route::get('/profile', [AuthController::class, 'profile']);
+// Route::post('/logout', [AuthController::class, 'logout']);
+// Route::post('/change_password', [AuthController::class, 'change_password']);
+// });
+
+Route::middleware('auth:sanctum')->group(function () {
+    // return $request->user();
     Route::get('/profile', [AuthController::class, 'profile']);
-    Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/change_password', [AuthController::class, 'change_password']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     // CONTENT ADMIN
     Route::middleware('content_admin')->group(function () {
@@ -123,6 +130,7 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::get('/guest/{hotel_id}', [GuestController::class, 'guest_list']);
         Route::get('/guest_data/{room_number_id}', [GuestController::class, 'guest_data']);
         Route::put('/guest/{room_number_id}', [GuestController::class, 'update_guest']);
+        Route::post('/check_out/{room_number_id}', [GuestController::class, 'check_out']);
         Route::delete('/guest/{room_number_id}', [GuestController::class, 'delete_guest']);
     });
 
@@ -160,9 +168,6 @@ Route::group(['middleware' => 'firebase'], function () {
         Route::put('update_admin/{admin_id}', [ClientController::class, 'update_admin']);
         Route::get('/hotel_list', [ClientController::class, 'hotel_list']);
         Route::get('/television_list/{hotel_id}', [ClientController::class, 'television_list']);
+        Route::get('/guest_list/{hotel_id}', [ClientController::class, 'guest_list']);
     });
-});
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
 });
