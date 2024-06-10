@@ -65,6 +65,7 @@ Route::put('/payment_method', [FoodServiceRequestController::class, 'change_paym
 Route::get('/pending_transaction', [FoodServiceRequestController::class, 'pending_transaction']);
 Route::get('/show_qr_code', [FoodServiceRequestController::class, 'show_qr_code']);
 Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
+Route::post('/notif', [FoodServiceRequestController::class, 'faspay_notification']);
 
 // Route::group(['middleware' => 'firebase'], function () {
 // Route::get('/profile', [AuthController::class, 'profile']);

@@ -739,4 +739,37 @@ class FoodServiceRequestController extends Controller
 
         return response()->json('Something went wrong.', 400);
     }
+
+    public function faspay_notification(Request $req)
+    {
+        try {
+            // Decode JSON string to array
+            // $data = json_decode($req, true);
+
+            // Return JSON response with pretty print
+            // return response()->json($data, 200, [], JSON_PRETTY_PRINT);
+
+            // return response()->json($req->all());
+
+            // $server_key = config('midtrans.server_key');
+            // $hashed = hash('sha1', hash('md5', 'bot' . $request->merchant_id . '5BPaqpd8' . $request->bill_no));
+
+            // $order_id = explode('-', $request->order_id);
+
+            // dd($hashed, $request->signature);
+            // if ($hashed == $request->signature) {
+            if ($req->payment_status_desc == 'Payment Sukses') {
+
+                return response()->json('OK');
+            }
+            // }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get notification',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('Something went wrong.', 400);
+    }
 }
