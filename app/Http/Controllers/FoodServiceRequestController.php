@@ -13,9 +13,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Kreait\Firebase\Factory;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class FoodServiceRequestController extends Controller
 {
+    protected $auth, $rtdb;
+
+    public function __construct()
+    {
+        $this->auth = Firebase::auth();
+
+        $firebase = (new Factory)
+            ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')));
+
+        $this->rtdb = $firebase->withDatabaseUri(env("FIREBASE_DATABASE_URL"))
+            ->createDatabase();
+    }
+
     public function add_to_cart(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -743,22 +758,17 @@ class FoodServiceRequestController extends Controller
     public function faspay_notification(Request $req)
     {
         try {
-            // Decode JSON string to array
-            // $data = json_decode($req, true);
-
-            // Return JSON response with pretty print
-            // return response()->json($data, 200, [], JSON_PRETTY_PRINT);
-
-            // return response()->json($req->all());
-
-            // $server_key = config('midtrans.server_key');
             // $hashed = hash('sha1', hash('md5', 'bot' . $request->merchant_id . '5BPaqpd8' . $request->bill_no));
 
-            // $order_id = explode('-', $request->order_id);
-
-            // dd($hashed, $request->signature);
             // if ($hashed == $request->signature) {
             if ($req->payment_status_desc == 'Payment Sukses') {
+
+                $transaction = $this->rtdb->getReference($req->trx_id);
+
+                // $transaction = Transactions::where('transaction_id', $req->trx_id)->first();
+                $transaction->update([
+                    'status' => 'paid'
+                ]);
 
                 return response()->json('OK');
             }
