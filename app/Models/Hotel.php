@@ -25,6 +25,8 @@ class Hotel extends Model
         'longitude',
         'langitude',
         'logo',
+        'kitchen_open',
+        'kitchen_close',
         'order_food_intro',
         'qr_code_payment',
         'qr_code_wifi',

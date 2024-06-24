@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('longitude')->nullable();
             $table->string('langitude')->nullable();
             $table->string('logo')->nullable();
+            $table->time('kitchen_open')->nullable();
+            $table->time('kitchen_close')->nullable();
             $table->string('order_food_intro')->nullable();
             $table->string('qr_code_payment')->nullable();
             $table->string('qr_code_wifi')->nullable();
