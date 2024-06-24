@@ -53,29 +53,45 @@ class MenuController extends Controller
         try {
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
-            $menu_type = MenuType::where('id', $request->menu_type_id)->first();
-            $menus = Menu::where('hotel_id', $hotel->id)
-                ->where('type', $menu_type->type)
-                ->get();
 
-            $menu_data = [];
+            $kitchen_open = $hotel->kitchen_open;
+            $kitchen_close = $hotel->kitchen_close;
 
-            foreach ($menus as $menu) {
-                $menu_id = $menu->id;
-                $menu_name = $menu->name;
-                $menu_description = $menu->description;
-                $menu_price = $menu->price;
-                $menu_image = $menu->image;
+            date_default_timezone_set('Asia/Jakarta');
+            $time_now = date('H:i:s');
 
-                $menu_data[] = [
-                    'menu_id' => $menu_id,
-                    'menu_name' => $menu_name,
-                    'menu_description' => $menu_description,
-                    'menu_price' => $menu_price,
-                    'menu_image' => $menu_image,
-                ];
+            if ($time_now <= $kitchen_open) {
+                return response()->json([
+                    'message' => 'We\'re sorry, our kitchen is not yet ready to take an order.'
+                ]);
+            } else if ($time_now >= $kitchen_close) {
+                return response()->json([
+                    'message' => 'We\'re sorry, our kitchen is already close order.'
+                ]);
+            } else {
+                $menu_type = MenuType::where('id', $request->menu_type_id)->first();
+                $menus = Menu::where('hotel_id', $hotel->id)
+                    ->where('type', $menu_type->type)
+                    ->get();
+
+                $menu_data = [];
+
+                foreach ($menus as $menu) {
+                    $menu_id = $menu->id;
+                    $menu_name = $menu->name;
+                    $menu_description = $menu->description;
+                    $menu_price = $menu->price;
+                    $menu_image = $menu->image;
+
+                    $menu_data[] = [
+                        'menu_id' => $menu_id,
+                        'menu_name' => $menu_name,
+                        'menu_description' => $menu_description,
+                        'menu_price' => $menu_price,
+                        'menu_image' => $menu_image,
+                    ];
+                }
             }
-
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get menu',
@@ -86,7 +102,8 @@ class MenuController extends Controller
         return response()->json($menu_data);
     }
 
-    public function menu_type(Request $request) {
+    public function menu_type(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'mac_address' => 'required',
         ]);
