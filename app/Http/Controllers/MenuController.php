@@ -61,13 +61,11 @@ class MenuController extends Controller
             $time_now = date('H:i:s');
 
             if ($time_now <= $kitchen_open) {
-                return response()->json([
-                    'message' => 'We\'re sorry, our kitchen is not yet ready to take an order.'
-                ]);
+                $message[] = ["message" => 'We\'re sorry, our kitchen is not yet ready to take an order.'];
+                return response()->json($message);
             } else if ($time_now >= $kitchen_close) {
-                return response()->json([
-                    'message' => 'We\'re sorry, our kitchen is already close order.'
-                ]);
+                $message[] = ["message" => 'We\'re sorry, our kitchen is already close order.'];
+                return response()->json($message);
             } else {
                 $menu_type = MenuType::where('id', $request->menu_type_id)->first();
                 $menus = Menu::where('hotel_id', $hotel->id)
@@ -116,19 +114,33 @@ class MenuController extends Controller
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
 
-            $menu_types = MenuType::where('hotel_id', $hotel->id)
-                ->where('is_deleted', 0)
-                ->get();
+            $kitchen_open = $hotel->kitchen_open;
+            $kitchen_close = $hotel->kitchen_close;
 
-            $menu_type = [];
-            foreach ($menu_types as $types) {
-                $type = $types->type;
-                $image = $types->image;
+            date_default_timezone_set('Asia/Jakarta');
+            $time_now = date('H:i:s');
 
-                $menu_type[] = [
-                    'menu_type_id' => $types->id,
-                    'menu_type' => $type,
-                ];
+            if ($time_now <= $kitchen_open) {
+                $message[] = ["message" => 'We\'re sorry, our kitchen is not yet ready to take an order.'];
+                return response()->json($message);
+            } else if ($time_now >= $kitchen_close) {
+                $message[] = ["message" => 'We\'re sorry, our kitchen is already close order.'];
+                return response()->json($message);
+            } else {
+                $menu_types = MenuType::where('hotel_id', $hotel->id)
+                    ->where('is_deleted', 0)
+                    ->get();
+
+                $menu_type = [];
+                foreach ($menu_types as $types) {
+                    $type = $types->type;
+                    $image = $types->image;
+
+                    $menu_type[] = [
+                        'menu_type_id' => $types->id,
+                        'menu_type' => $type,
+                    ];
+                }
             }
         } catch (\Throwable $th) {
             return response()->json([
