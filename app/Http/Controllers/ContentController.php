@@ -709,6 +709,54 @@ class ContentController extends Controller
         ]);
     }
 
+    public function kitchen_operational(Request $request, $hotel_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'kitchen_open' => 'required',
+            'kitchen_close' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        try {
+            $hotel = Hotel::where('id', $hotel_id)->first();
+
+            $hotel->update([
+                'kitchen_open' => $request->kitchen_open,
+                'kitchen_close' => $request->kitchen_close
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save kitchen operational time',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json('kitchen operational time added succesfully');
+    }
+
+    public function get_kitchen_operational($hotel_id)
+    {
+        try {
+            $hotel = Hotel::where('id', $hotel_id)->first();
+
+            $kitchen_open = $hotel->kitchen_open;
+            $kitchen_close = $hotel->kitchen_close;
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get ads lips menu',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'kitchen_open' => $kitchen_open,
+            'kitchen_close' => $kitchen_close
+        ]);
+    }
+
     public function ads_lips_menu(Request $request, $hotel_id)
     {
         $validator = Validator::make($request->all(), [

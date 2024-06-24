@@ -65,6 +65,8 @@ Route::put('/payment_method', [FoodServiceRequestController::class, 'change_paym
 Route::get('/pending_transaction', [FoodServiceRequestController::class, 'pending_transaction']);
 Route::get('/show_qr_code', [FoodServiceRequestController::class, 'show_qr_code']);
 Route::post('/notification', [FoodServiceRequestController::class, 'notification']);
+
+
 Route::post('/notif', [FoodServiceRequestController::class, 'faspay_notification']);
 
 // Route::group(['middleware' => 'firebase'], function () {
@@ -106,6 +108,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/amenities/{service_id}', [ContentController::class, 'amenities_update']);
         Route::post('/amenity_image/{service_id}', [ContentController::class, 'update_amenity_image']);
         Route::delete('/amenities/{service_id}', [ContentController::class, 'amenities_delete']);
+        Route::post('/kitchen_operational/{hotel_id}', [ContentController::class, 'kitchen_operational']);
+        Route::get('/kitchen_operational/{hotel_id}', [ContentController::class, 'get_kitchen_operational']);
         Route::post('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_menu']);
         Route::get('/ads_lips/{hotel_id}', [ContentController::class, 'ads_lips_content']);
         Route::post('/menu_type/{hotel_id}', [ContentController::class, 'menu_type_create']);
