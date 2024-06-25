@@ -137,17 +137,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/guest/{room_number_id}', [GuestController::class, 'update_guest']);
         Route::post('/check_out/{room_number_id}', [GuestController::class, 'check_out']);
         Route::delete('/guest/{room_number_id}', [GuestController::class, 'delete_guest']);
+        Route::get('/room_service_list/{hotel_id}', [ServiceController::class, 'room_service_list']);
+        Route::get('/room_service_history/{hotel_id}', [ServiceController::class, 'room_service_history']);
+        Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
+        Route::get('/food_service_history/{hotel_id}', [ServiceController::class, 'food_service_history']);
     });
 
     // SERVICE ADMIN
     Route::middleware('service_admin')->group(function () {
         Route::get('/room_service_list/{hotel_id}', [ServiceController::class, 'room_service_list']);
-        Route::get('/room_service_detail/{room_service_request_id}', [ServiceController::class, 'room_service_detail']);
+        // Route::get('/room_service_detail/{room_service_request_id}', [ServiceController::class, 'room_service_detail']);
         Route::post('/accept_service_request/{room_service_request_id}', [ServiceController::class, 'accept_service_request']);
         Route::post('/decline_service_request/{room_service_request_id}', [ServiceController::class, 'decline_service_request']);
         Route::get('/room_service_history/{hotel_id}', [ServiceController::class, 'room_service_history']);
         Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
-        Route::get('/food_service_detail/{food_service_request_id}', [ServiceController::class, 'food_service_detail']);
+        // Route::get('/food_service_detail/{food_service_request_id}', [ServiceController::class, 'food_service_detail']);
         Route::post('/accept_food_order/{food_service_request_id}', [ServiceController::class, 'accept_food_order']);
         Route::post('/decline_food_order/{food_service_request_id}', [ServiceController::class, 'decline_food_order']);
         Route::get('/payment_status/{food_service_request_id}', [ServiceController::class, 'payment_status']);
