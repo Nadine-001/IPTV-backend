@@ -69,38 +69,38 @@ class ServiceController extends Controller
         ]);
     }
 
-    public function room_service_detail($room_service_request_id)
-    {
-        $room_service_request = RoomServiceRequest::where('id', $room_service_request_id)->first();
-        $request_services = RoomServiceRequestDetail::where('room_service_request_id', $room_service_request->id)->get();
+    // public function room_service_detail($room_service_request_id)
+    // {
+    //     $room_service_request = RoomServiceRequest::where('id', $room_service_request_id)->first();
+    //     $request_services = RoomServiceRequestDetail::where('room_service_request_id', $room_service_request->id)->get();
 
-        try {
-            $request_list = [];
+    //     try {
+    //         $request_list = [];
 
-            foreach ($request_services as $request_service) {
-                $room_service_id = $request_service->room_service_id;
-                $room_service = RoomService::where('id', $room_service_id)->first();
+    //         foreach ($request_services as $request_service) {
+    //             $room_service_id = $request_service->room_service_id;
+    //             $room_service = RoomService::where('id', $room_service_id)->first();
 
-                $service_name = $room_service->name;
-                $service_image = $room_service->image;
-                $request_qty = $request_service->qty;
+    //             $service_name = $room_service->name;
+    //             $service_image = $room_service->image;
+    //             $request_qty = $request_service->qty;
 
-                $request_list[] = [
-                    'service_id' => $room_service_id,
-                    'service_name' => $service_name,
-                    'service_image' => $service_image,
-                    'request_qty' => $request_qty,
-                ];
-            }
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'failed to get room service request detail',
-                'errors' => $th->getMessage()
-            ], 400);
-        }
+    //             $request_list[] = [
+    //                 'service_id' => $room_service_id,
+    //                 'service_name' => $service_name,
+    //                 'service_image' => $service_image,
+    //                 'request_qty' => $request_qty,
+    //             ];
+    //         }
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'message' => 'failed to get room service request detail',
+    //             'errors' => $th->getMessage()
+    //         ], 400);
+    //     }
 
-        return response()->json($request_list);
-    }
+    //     return response()->json($request_list);
+    // }
 
     public function accept_service_request($room_service_request_id)
     {
@@ -266,44 +266,44 @@ class ServiceController extends Controller
         ]);
     }
 
-    public function food_service_detail($food_service_request_id)
-    {
-        $food_service_request = FoodServiceRequest::where('id', $food_service_request_id)->first();
-        $food_services = FoodServiceRequestDetail::where('food_service_request_id', $food_service_request->id)->get();
+    // public function food_service_detail($food_service_request_id)
+    // {
+    //     $food_service_request = FoodServiceRequest::where('id', $food_service_request_id)->first();
+    //     $food_services = FoodServiceRequestDetail::where('food_service_request_id', $food_service_request->id)->get();
 
-        try {
-            $order_list = [];
+    //     try {
+    //         $order_list = [];
 
-            foreach ($food_services as $food_service) {
-                $menu_id = $food_service->menu_id;
-                $menu = Menu::where('id', $menu_id)->first();
+    //         foreach ($food_services as $food_service) {
+    //             $menu_id = $food_service->menu_id;
+    //             $menu = Menu::where('id', $menu_id)->first();
 
-                $menu_name = $menu->name;
-                $menu_description = $menu->description;
-                $menu_price = $menu->price;
-                $menu_image = $menu->image;
-                $request_qty = $food_service->qty;
-                $request_total = $food_service_request->total;
+    //             $menu_name = $menu->name;
+    //             $menu_description = $menu->description;
+    //             $menu_price = $menu->price;
+    //             $menu_image = $menu->image;
+    //             $request_qty = $food_service->qty;
+    //             $request_total = $food_service_request->total;
 
-                $order_list[] = [
-                    'menu_id' => $menu_id,
-                    'menu_name' => $menu_name,
-                    'menu_image' => $menu_image,
-                    'menu_description' => $menu_description,
-                    'menu_price' => $menu_price,
-                    'request_qty' => $request_qty,
-                    'request_total' => $request_total,
-                ];
-            }
-        } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'failed to get food service request detail',
-                'errors' => $th->getMessage()
-            ], 400);
-        }
+    //             $order_list[] = [
+    //                 'menu_id' => $menu_id,
+    //                 'menu_name' => $menu_name,
+    //                 'menu_image' => $menu_image,
+    //                 'menu_description' => $menu_description,
+    //                 'menu_price' => $menu_price,
+    //                 'request_qty' => $request_qty,
+    //                 'request_total' => $request_total,
+    //             ];
+    //         }
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'message' => 'failed to get food service request detail',
+    //             'errors' => $th->getMessage()
+    //         ], 400);
+    //     }
 
-        return response()->json($order_list);
-    }
+    //     return response()->json($order_list);
+    // }
 
     public function accept_food_order($food_service_request_id)
     {
