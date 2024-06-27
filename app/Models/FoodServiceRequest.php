@@ -21,6 +21,7 @@ class FoodServiceRequest extends Model
         'qr_code_expire_time',
         'is_paid',
         'order_id',
+        'is_notified',
     ];
 
     public function hotel(): BelongsTo

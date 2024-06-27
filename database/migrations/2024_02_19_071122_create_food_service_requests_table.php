@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('order_id')->nullable();
             $table->string('qr_code')->nullable();
             $table->datetime('qr_code_expire_time')->nullable();
-            $table->boolean('is_paid')->default(0);
+            $table->boolean('is_accepted')->nullable();
+            $table->boolean('is_notified')->nullable();
             $table->timestamps();
         });
     }

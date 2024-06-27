@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('television_id')->index();
             $table->foreign('television_id')->references('id')->on('televisions');
             $table->boolean('is_accepted')->nullable();
+            $table->boolean('is_notified')->nullable();
             $table->timestamps();
         });
     }

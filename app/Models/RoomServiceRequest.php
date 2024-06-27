@@ -15,6 +15,7 @@ class RoomServiceRequest extends Model
         'hotel_id',
         'television_id',
         'is_accepted',
+        'is_notified',
     ];
 
     public function hotel(): BelongsTo
