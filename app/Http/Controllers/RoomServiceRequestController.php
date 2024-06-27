@@ -8,6 +8,7 @@ use App\Models\RoomServiceRequest;
 use App\Models\RoomServiceRequestDetail;
 use App\Models\Television;
 use App\Models\TempCartRoomService;
+use ElephantIO\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -209,6 +210,7 @@ class RoomServiceRequestController extends Controller
             $room_service_request = RoomServiceRequest::create([
                 'hotel_id' => $hotel->id,
                 'television_id' => $television->id,
+                'is_notified' => 1,
             ]);
 
             foreach ($request->requests as $req) {
@@ -227,7 +229,19 @@ class RoomServiceRequestController extends Controller
                     ], 500);
                 }
             }
+
             DB::commit();
+
+            $url = 'http://localhost:3000';
+            $options = ['client' => Client::CLIENT_4X];
+
+            $client = Client::create($url, $options);
+            $client->connect();
+
+            $data = ['message' => "New room service request!"];
+            $client->emit('newRoomServiceRequest', $data);
+
+            $client->disconnect();
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([

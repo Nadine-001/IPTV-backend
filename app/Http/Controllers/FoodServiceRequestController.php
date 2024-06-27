@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\Television;
 use App\Models\TempCartFoodService;
 use App\Models\TempCartFoodServiceDetail;
+use ElephantIO\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -403,6 +404,21 @@ class FoodServiceRequestController extends Controller
                 ];
 
                 return response()->json($data);
+            } else if (strtolower($request->payment_method) == "cash") {
+                $food_service_request->update([
+                    'is_notified' => 1,
+                ]);
+
+                $url = 'http://localhost:3000';
+                $options = ['client' => Client::CLIENT_4X];
+
+                $client = Client::create($url, $options);
+                $client->connect();
+
+                $data = ['message' => "New food order!"];
+                $client->emit('newFoodOrder', $data);
+
+                $client->disconnect();
             }
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -739,7 +755,19 @@ class FoodServiceRequestController extends Controller
                         'is_paid' => 1,
                         'qr_code' => NULL,
                         'qr_code_expire_time' => NULL,
+                        'is_notified' => 1,
                     ]);
+
+                    $url = 'http://localhost:3000';
+                    $options = ['client' => Client::CLIENT_4X];
+
+                    $client = Client::create($url, $options);
+                    $client->connect();
+
+                    $data = ['message' => "New food order!"];
+                    $client->emit('newFoodOrder', $data);
+
+                    $client->disconnect();
 
                     return response()->json('OK');
                 }
@@ -765,7 +793,6 @@ class FoodServiceRequestController extends Controller
 
                 $transaction = $this->rtdb->getReference($req->trx_id);
 
-                // $transaction = Transactions::where('transaction_id', $req->trx_id)->first();
                 $transaction->update([
                     'status' => 'paid'
                 ]);
