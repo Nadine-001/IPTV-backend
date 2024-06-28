@@ -8,27 +8,32 @@ var http = require("http").createServer(app);
 // include socket IO
 var socketIO = require("socket.io")(http, {
     cors: {
-        origin: ["http://localhost"],
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+        credentials: true
     },
 });
 
-// start the HTTP server at port 3000
-http.listen(process.env.PORT || 3000, function () {
+// start the HTTP server at port 8000
+http.listen(process.env.PORT || 8000, function () {
     console.log("Server started running...");
 
-    // called when the io() is called from client
     socketIO.on("connection", function (socket) {
-        // called manually from client to connect the user with server
         socket.on("connected", function (id) {
             console.log(id);
         });
 
         socket.on("newFoodOrder", function (message) {
-            console.log(message);
+            console.log("newFoodOrder :", message);
+            socketIO.emit("foodOrderAlert", message);
+            console.log("foodOrderAlert :", message);
         });
 
         socket.on("newRoomServiceRequest", function (message) {
-            console.log(message);
+            console.log("newRoomServiceRequest :", message);
+
+            socketIO.emit("roomRequestAlert", message);
+            console.log("roomRequestAlert :", message);
         });
     });
 });
