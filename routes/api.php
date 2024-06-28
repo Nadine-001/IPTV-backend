@@ -137,10 +137,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/guest/{room_number_id}', [GuestController::class, 'update_guest']);
         Route::post('/check_out/{room_number_id}', [GuestController::class, 'check_out']);
         Route::delete('/guest/{room_number_id}', [GuestController::class, 'delete_guest']);
-        Route::get('/room_service_list/{hotel_id}', [ServiceController::class, 'room_service_list']);
-        Route::get('/room_service_history/{hotel_id}', [ServiceController::class, 'room_service_history']);
-        Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
-        Route::get('/food_service_history/{hotel_id}', [ServiceController::class, 'food_service_history']);
+        Route::get('/room_service_ls/{hotel_id}', [ServiceController::class, 'room_service_list']);
+        Route::get('/history_room_service/{hotel_id}', [ServiceController::class, 'room_service_history']);
+        Route::get('/food_service_ls/{hotel_id}', [ServiceController::class, 'food_service_list']);
+        Route::get('/history_food_service/{hotel_id}', [ServiceController::class, 'food_service_history']);
     });
 
     // SERVICE ADMIN
