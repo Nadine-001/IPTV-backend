@@ -8,7 +8,7 @@ var http = require("http").createServer(app);
 // include socket IO
 var socketIO = require("socket.io")(http, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "https://mas-iptv.web.app/#/",
         methods: ["GET", "POST"],
         credentials: true
     },
