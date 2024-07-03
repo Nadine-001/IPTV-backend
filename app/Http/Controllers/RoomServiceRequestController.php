@@ -232,7 +232,8 @@ class RoomServiceRequestController extends Controller
 
             DB::commit();
 
-            $url = 'https://iptv-hms.api.dev.mas-ts.com:8000';
+            // $url = 'https://iptv-hms.api.dev.mas-ts.com:8000';
+            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
             $options = ['client' => Client::CLIENT_4X];
 
             $client = Client::create($url, $options);
