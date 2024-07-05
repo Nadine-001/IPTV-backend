@@ -68,6 +68,7 @@ Route::post('/notification', [FoodServiceRequestController::class, 'notification
 
 
 Route::post('/notif', [FoodServiceRequestController::class, 'faspay_notification']);
+Route::get('/test', [RoomServiceRequestController::class, 'test']);
 
 // Route::group(['middleware' => 'firebase'], function () {
 // Route::get('/profile', [AuthController::class, 'profile']);

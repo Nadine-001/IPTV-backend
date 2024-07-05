@@ -409,7 +409,9 @@ class FoodServiceRequestController extends Controller
                     'is_notified' => 1,
                 ]);
 
-                $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                // $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
+
                 $options = ['client' => Client::CLIENT_4X];
 
                 $client = Client::create($url, $options);
@@ -758,7 +760,9 @@ class FoodServiceRequestController extends Controller
                         'is_notified' => 1,
                     ]);
 
-                    $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                    // $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                    $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
+
                     $options = ['client' => Client::CLIENT_4X];
 
                     $client = Client::create($url, $options);

@@ -230,10 +230,8 @@ class RoomServiceRequestController extends Controller
                 }
             }
 
-            DB::commit();
-
-            // $url = 'https://iptv-hms.api.dev.mas-ts.com:8000';
-            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+            $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
+            // $url = 'https://iptv-hms.socket.dev.mas-ts.com';
             $options = ['client' => Client::CLIENT_4X];
 
             $client = Client::create($url, $options);
@@ -243,6 +241,12 @@ class RoomServiceRequestController extends Controller
             $client->emit('newRoomServiceRequest', $data);
 
             $client->disconnect();
+
+            $room_service_request->update([
+                'is_notified' => 1,
+            ]);
+
+            DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
@@ -255,5 +259,25 @@ class RoomServiceRequestController extends Controller
             'mac_address' => $request->mac_address,
             'requests' => $request->requests,
         ]);
+    }
+
+    public function test() {
+        $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
+        // $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+
+        $options = ['client' => Client::CLIENT_4X];
+
+        $client = Client::create($url, $options);
+        $client->connect();
+
+        $data = ['message' => "New room service request!"];
+        $client->emit('newRoomServiceRequest', $data);
+
+        // $data = ['message' => "New food order!"];
+        // $client->emit('newFoodOrder', $data);
+
+        $client->disconnect();
+
+        return response()->json('Alert sent.');
     }
 }
