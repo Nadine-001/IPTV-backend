@@ -793,7 +793,7 @@ class FoodServiceRequestController extends Controller
             $hashed = hash('sha1', hash('md5', 'bot' . $req->merchant_id . 'p@ssw0rd' . $req->bill_no));
 
             if ($hashed == $req->signature) {
-                if ($req->payment_status_desc == 'Payment Sukses' && $req->payment_status_code == 2) {
+                if ($req->payment_status_code == 2) {
 
                     $transaction = $this->rtdb->getReference($req->trx_id);
 
@@ -812,5 +812,18 @@ class FoodServiceRequestController extends Controller
         }
 
         return response()->json('Something went wrong.', 400);
+    }
+
+    public function return_page(Request $request)
+    {
+        $status = $request->status;
+
+        if ($status == '2') {
+            $message = 'Thank You! Your Transaction Success';
+        } else {
+            $message = 'Sorry! Your Transaction Failed';
+        }
+
+        return view('merchant_return_page', ['message' => $message]);
     }
 }
