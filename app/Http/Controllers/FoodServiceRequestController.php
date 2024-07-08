@@ -760,7 +760,7 @@ class FoodServiceRequestController extends Controller
                         'is_notified' => 1,
                     ]);
 
-                    // $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                    // $url = 'https://iptv-hms.socket.dev.mas-ts.com:80';
                     $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
 
                     $options = ['client' => Client::CLIENT_4X];
@@ -790,20 +790,20 @@ class FoodServiceRequestController extends Controller
     public function faspay_notification(Request $req)
     {
         try {
-            // $hashed = hash('sha1', hash('md5', 'bot' . $request->merchant_id . '5BPaqpd8' . $request->bill_no));
+            $hashed = hash('sha1', hash('md5', 'bot' . $req->merchant_id . 'p@ssw0rd' . $req->bill_no));
 
-            // if ($hashed == $request->signature) {
-            if ($req->payment_status_desc == 'Payment Sukses') {
+            if ($hashed == $req->signature) {
+                if ($req->payment_status_desc == 'Payment Sukses') {
 
-                $transaction = $this->rtdb->getReference($req->trx_id);
+                    $transaction = $this->rtdb->getReference($req->trx_id);
 
-                $transaction->update([
-                    'status' => 'paid'
-                ]);
+                    $transaction->update([
+                        'status' => 'paid'
+                    ]);
 
-                return response()->json('OK');
+                    return response()->json('OK');
+                }
             }
-            // }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get notification',
