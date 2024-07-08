@@ -793,7 +793,7 @@ class FoodServiceRequestController extends Controller
             $hashed = hash('sha1', hash('md5', 'bot' . $req->merchant_id . 'p@ssw0rd' . $req->bill_no));
 
             if ($hashed == $req->signature) {
-                if ($req->payment_status_desc == 'Payment Sukses') {
+                if ($req->payment_status_desc == 'Payment Sukses' && $req->payment_status_code == 2) {
 
                     $transaction = $this->rtdb->getReference($req->trx_id);
 
