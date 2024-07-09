@@ -798,7 +798,11 @@ class FoodServiceRequestController extends Controller
                     ]);
 
                     return response()->json('OK');
+                } else {
+                    return response()->json('Payment failed.');
                 }
+            } else {
+                return response()->json('Signature don\'t match', 400);
             }
         } catch (\Throwable $th) {
             return response()->json([
