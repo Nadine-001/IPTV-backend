@@ -810,10 +810,26 @@ class FoodServiceRequestController extends Controller
                         'response_date' => date('Y-m-d H:i:s'),
                     ]);
                 } else {
-                    return response()->json('Payment failed.');
+                    return response()->json([
+                        'respone' => "Payment Notification",
+                        'trx_id' => $req->trx_id,
+                        'merchant_id' => $req->merchant_id,
+                        'merchant' => $req->merchant,
+                        'bill_no' => $req->bill_no,
+                        'response_desc' => "Failed",
+                        'response_date' => date('Y-m-d H:i:s'),
+                    ], 417);
                 }
             } else {
-                return response()->json('Signature don\'t match', 400);
+                return response()->json([
+                    'respone' => "Payment Notification",
+                    'trx_id' => $req->trx_id,
+                    'merchant_id' => $req->merchant_id,
+                    'merchant' => $req->merchant,
+                    'bill_no' => $req->bill_no,
+                    'response_desc' => "Signature don't match",
+                    'response_date' => date('Y-m-d H:i:s'),
+                ], 400);
             }
         } catch (\Throwable $th) {
             return response()->json([
