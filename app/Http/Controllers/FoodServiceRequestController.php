@@ -786,7 +786,7 @@ class FoodServiceRequestController extends Controller
     public function faspay_notification(Request $req)
     {
         try {
-            $hashed = hash('sha1', hash('md5', 'bot' . $req->merchant_id . 'p@ssw0rd' . $req->bill_no));
+            $hashed = hash('sha1', hash('md5', 'bot' . $req->merchant_id . 'p@ssw0rd' . $req->bill_no . $req->payment_status_code));
 
             if ($hashed == $req->signature) {
                 if ($req->payment_status_code == 2) {
@@ -797,7 +797,18 @@ class FoodServiceRequestController extends Controller
                         'status' => 'paid'
                     ]);
 
-                    return response()->json('OK');
+                    date_default_timezone_set('Asia/Jakarta');
+
+                    return response()->json([
+                        'respone' => "Payment Notification",
+                        'trx_id' => $req->trx_id,
+                        'merchant_id' => $req->merchant_id,
+                        'merchant' => $req->merchant,
+                        'bill_no' => $req->bill_no,
+                        'response_code' => "00",
+                        'response_desc' => "Success",
+                        'response_date' => date('Y-m-d H:i:s'),
+                    ]);
                 } else {
                     return response()->json('Payment failed.');
                 }
