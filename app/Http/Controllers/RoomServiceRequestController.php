@@ -231,7 +231,7 @@ class RoomServiceRequestController extends Controller
             }
 
             // $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
-            $url = 'https://iptv-hms.socket.dev.mas-ts.com:80';
+            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
             $options = ['client' => Client::CLIENT_4X];
 
             $client = Client::create($url, $options);
@@ -263,7 +263,7 @@ class RoomServiceRequestController extends Controller
 
     public function test() {
         // $url = 'https://iptv-hms.socket.dev.mas-ts.com:8000';
-        $url = 'https://iptv-hms.socket.dev.mas-ts.com:80';
+        $url = 'https://iptv-hms.socket.dev.mas-ts.com';
 
         $options = ['client' => Client::CLIENT_4X];
 
