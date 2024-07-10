@@ -61,7 +61,7 @@ class GuestController extends Controller
             'room_type' => 'required',
             'guest_name' => 'required',
             'guest_gender' => 'required',
-            'check_in' => 'required',
+            // 'check_in' => 'required',
         ]);
 
         if ($validator->fails()) {
