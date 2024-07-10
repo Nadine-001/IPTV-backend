@@ -231,12 +231,18 @@ class RoomServiceRequestController extends Controller
             }
 
             $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+            // $url = 'http://localhost:8000';
+
             $options = ['client' => Client::CLIENT_4X];
 
             $client = Client::create($url, $options);
             $client->connect();
 
-            $data = ['message' => "New room service request!"];
+            $data = [
+                'hotel_id' => $hotel->id,
+                'message' => "New room service request!"
+            ];
+
             $client->emit('newRoomServiceRequest', $data);
 
             $client->disconnect();
@@ -260,29 +266,45 @@ class RoomServiceRequestController extends Controller
         ]);
     }
 
-    public function test_room_service() {
+    public function test_room_service()
+    {
         $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+        // $url = 'http://localhost:8000';
+
         $options = ['client' => Client::CLIENT_4X];
 
         $client = Client::create($url, $options);
         $client->connect();
 
-        $data = ['message' => "New room service request!"];
+        $data = [
+            'hotel_id' => 13,
+            'message' => "New room service request!"
+        ];
+
+        $client->emit('roomService', $data);
         $client->emit('newRoomServiceRequest', $data);
-        
+
         $client->disconnect();
 
         return response()->json('Alert sent.');
     }
 
-    public function test_food_order() {
+    public function test_food_order()
+    {
         $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+        // $url = 'http://localhost:8000';
+
         $options = ['client' => Client::CLIENT_4X];
 
         $client = Client::create($url, $options);
         $client->connect();
 
-        $data = ['message' => "New food order!"];
+        $data = [
+            'hotel_id' => 13,
+            'message' => "New food order!"
+        ];
+
+        $client->emit('kitchen', $data);
         $client->emit('newFoodOrder', $data);
 
         $client->disconnect();

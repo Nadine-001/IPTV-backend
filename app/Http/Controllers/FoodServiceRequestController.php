@@ -408,12 +408,18 @@ class FoodServiceRequestController extends Controller
                 ]);
 
                 $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                // $url = 'http://localhost:8000';
+
                 $options = ['client' => Client::CLIENT_4X];
 
                 $client = Client::create($url, $options);
                 $client->connect();
 
-                $data = ['message' => "New food order!"];
+                $data = [
+                    'hotel_id' => $hotel->id,
+                    'message' => "New food order!"
+                ];
+
                 $client->emit('newFoodOrder', $data);
 
                 $client->disconnect();
@@ -757,12 +763,18 @@ class FoodServiceRequestController extends Controller
                     ]);
 
                     $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+                    // $url = 'http://localhost:8000';
+
                     $options = ['client' => Client::CLIENT_4X];
 
                     $client = Client::create($url, $options);
                     $client->connect();
 
-                    $data = ['message' => "New food order!"];
+                    $data = [
+                        'hotel_id' => $food_service_request->hotel_id,
+                        'message' => "New food order!"
+                    ];
+
                     $client->emit('newFoodOrder', $data);
 
                     $client->disconnect();

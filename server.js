@@ -10,7 +10,7 @@ var socketIO = require("socket.io")(http, {
     cors: {
         origin: "https://mas-iptv.web.app/#/",
         methods: ["GET", "POST"],
-        credentials: true
+        credentials: true,
     },
 });
 
@@ -19,21 +19,48 @@ http.listen(process.env.PORT || 8000, function () {
     console.log("Server started running...");
 
     socketIO.on("connection", function (socket) {
-        socket.on("connected", function (id) {
-            console.log(id);
+        socket.on("kitchen", function (data) {
+            socket.join("Kitchen" + data["hotel_id"] + 4);
+            console.log(data);
         });
 
-        socket.on("newFoodOrder", function (message) {
-            console.log("newFoodOrder :", message);
-            socketIO.emit("foodOrderAlert", message);
-            console.log("foodOrderAlert :", message);
+        socket.on("roomService", function (data) {
+            socket.join("RoomService" + data["hotel_id"] + 3);
+            console.log(data);
         });
 
-        socket.on("newRoomServiceRequest", function (message) {
-            console.log("newRoomServiceRequest :", message);
+        socket.on("receptionist", function (data) {
+            socket.join("Receptionist" + data["hotel_id"] + 2);
+            console.log(data);
+        });
 
-            socketIO.emit("roomRequestAlert", message);
-            console.log("roomRequestAlert :", message);
+        socket.on("kitchenLeave", function (data) {
+            socket.leave("Kitchen" + data["hotel_id"] + 4);
+            console.log(data);
+        });
+
+        socket.on("roomServiceLeave", function (data) {
+            socket.leave("RoomService" + data["hotel_id"] + 3);
+            console.log(data);
+        });
+
+        socket.on("receptionistLeave", function (data) {
+            socket.leave("Receptionist" + data["hotel_id"] + 2);
+            console.log(data);
+        });
+
+        socket.on("newFoodOrder", function (data) {
+            console.log("newFoodOrder :", data);
+
+            socketIO.to("Kitchen" + data["hotel_id"] + 4).to("Receptionist" + data["hotel_id"] + 2).emit("foodOrderAlert", data["message"]);
+            console.log("foodOrderAlert :", data);
+        });
+
+        socket.on("newRoomServiceRequest", function (data) {
+            console.log("newRoomServiceRequest :", data);
+
+            socketIO.to("RoomService" + data["hotel_id"] + 3).to("Receptionist" + data["hotel_id"] + 2).emit("roomRequestAlert", data["message"]);
+            console.log("roomRequestAlert :", data);
         });
     });
 });
