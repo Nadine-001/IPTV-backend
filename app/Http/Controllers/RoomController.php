@@ -79,7 +79,7 @@ class RoomController extends Controller
         try {
             $television = Television::where('mac_address', $request->mac_address)->first();
             $hotel = Hotel::where('id', $television->hotel_id)->first();
-            $services = RoomService::where('hotel_id', $hotel->id)->get();
+            $services = RoomService::where('hotel_id', $hotel->id)->where('is_deleted', 0)->get();
 
             $services_data = [];
 
