@@ -127,14 +127,12 @@ class FoodServiceRequestController extends Controller
             }
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to place order',
+                'message' => 'failed to show cart',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
-        return response()->json([
-            'order_list' => $order_list,
-        ]);
+        return response()->json($order_list);
     }
 
     public function increase_item(Request $request, $item_id)
