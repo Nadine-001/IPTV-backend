@@ -656,7 +656,7 @@ class FoodServiceRequestController extends Controller
 
                     $client->emit('newFoodOrder', $data);
                     $client->disconnect();
-
+                    
                     return response()->json([
                         'food_request_id' => $food_service_request->id,
                         'payment_method' => $food_service_request->payment_method,

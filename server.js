@@ -1,4 +1,3 @@
-// initialize express server
 var express = require("express");
 var app = express();
 
@@ -19,48 +18,62 @@ http.listen(process.env.PORT || 8000, function () {
     console.log("Server started running...");
 
     socketIO.on("connection", function (socket) {
+        console.log("A user connected");
+
         socket.on("kitchen", function (data) {
-            socket.join("Kitchen" + data["hotel_id"] + 4);
-            console.log(data);
+            let room = "Kitchen" + data["hotel_id"] + 4;
+            socket.join(room);
+            console.log(room);
         });
 
         socket.on("roomService", function (data) {
-            socket.join("RoomService" + data["hotel_id"] + 3);
-            console.log(data);
+            let room = "RoomService" + data["hotel_id"] + 3;
+            socket.join(room);
+            console.log(room);
         });
 
         socket.on("receptionist", function (data) {
-            socket.join("Receptionist" + data["hotel_id"] + 2);
-            console.log(data);
+            let room = "Receptionist" + data["hotel_id"] + 2;
+            socket.join(room);
+            console.log(room);
         });
 
         socket.on("kitchenLeave", function (data) {
-            socket.leave("Kitchen" + data["hotel_id"] + 4);
-            console.log(data);
+            let room = "Kitchen" + data["hotel_id"] + 4;
+            socket.leave(room);
+            console.log(room);
         });
 
         socket.on("roomServiceLeave", function (data) {
-            socket.leave("RoomService" + data["hotel_id"] + 3);
-            console.log(data);
+            let room = "RoomService" + data["hotel_id"] + 3;
+            socket.leave(room);
+            console.log(room);
         });
 
         socket.on("receptionistLeave", function (data) {
-            socket.leave("Receptionist" + data["hotel_id"] + 2);
-            console.log(data);
+            let room = "Receptionist" + data["hotel_id"] + 2;
+            socket.leave(room);
+            console.log(room);
         });
 
         socket.on("newFoodOrder", function (data) {
             console.log("newFoodOrder :", data);
-
-            socketIO.to("Kitchen" + data["hotel_id"] + 4).to("Receptionist" + data["hotel_id"] + 2).emit("foodOrderAlert", data["message"]);
+            let kitchenRoom = "Kitchen" + data["hotel_id"] + 4;
+            let receptionistRoom = "Receptionist" + data["hotel_id"] + 2;
+            socketIO.to(kitchenRoom).to(receptionistRoom).emit("foodOrderAlert", data["message"]);
             console.log("foodOrderAlert :", data);
         });
 
         socket.on("newRoomServiceRequest", function (data) {
             console.log("newRoomServiceRequest :", data);
+            let roomServiceRoom = "RoomService" + data["hotel_id"] + 3;
+            let receptionistRoom = "Receptionist" + data["hotel_id"] + 2;
+            socketIO.to(roomServiceRoom).to(receptionistRoom).emit("roomRequestAlert", data["message"]);
+            console.log(roomServiceRoom);
+        });
 
-            socketIO.to("RoomService" + data["hotel_id"] + 3).to("Receptionist" + data["hotel_id"] + 2).emit("roomRequestAlert", data["message"]);
-            console.log("roomRequestAlert :", data);
+        socket.on("disconnect", function () {
+            console.log("A user disconnected");
         });
     });
 });

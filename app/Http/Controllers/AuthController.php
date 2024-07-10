@@ -103,22 +103,7 @@ class AuthController extends Controller
             $user = $this->auth->signInWithEmailAndPassword($email, $password);
 
             $uid = $user->firebaseUserId();
-            // $token = $user->idToken();
             $role_id = $admin->role->id;
-
-            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
-            // $url = 'http://localhost:8000';
-
-            $options = ['client' => Client::CLIENT_4X];
-
-            $client = Client::create($url, $options);
-            $client->connect();
-
-            $data = ['hotel_id' => $hotel_id];
-
-            $client->emit($role_id == 4 ? 'kitchen' : ($role_id == 3 ? 'roomService' : ($role_id == 2 ? 'receptionist' : '')), $data);
-
-            $client->disconnect();
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'login failed',
@@ -237,21 +222,6 @@ class AuthController extends Controller
 
             $role_id = $user->role_id;
             $hotel_id = $user->hotel_id;
-
-            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
-            // $url = 'http://localhost:8000';
-
-            $options = ['client' => Client::CLIENT_4X];
-
-            $client = Client::create($url, $options);
-            $client->connect();
-
-            $data = ['hotel_id' => $hotel_id];
-
-            $client->emit($role_id == 4 ? 'kitchenLeave' : ($role_id == 3 ? 'roomServiceLeave' : ($role_id == 2 ? 'receptionistLeave' : '')), $data);
-            $client->disconnect();
-
-            // $this->auth->revokeRefreshTokens($this->getUid($request));
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'logout failed',
@@ -261,13 +231,4 @@ class AuthController extends Controller
 
         return response()->json('logout success');
     }
-
-    // public function getUid(Request $request)
-    // {
-    //     $token = $request->bearerToken();
-    //     $verifiedIdToken = $this->auth->verifyIdToken($token);
-    //     $uid = $verifiedIdToken->claims()->get('sub');
-
-    //     return $uid;
-    // }
 }

@@ -231,7 +231,7 @@ class RoomServiceRequestController extends Controller
             }
 
             $url = 'https://iptv-hms.socket.dev.mas-ts.com';
-            // $url = 'http://localhost:8000';
+            // $url = 'http://10.218.15.221:8000';
 
             $options = ['client' => Client::CLIENT_4X];
 
@@ -269,7 +269,7 @@ class RoomServiceRequestController extends Controller
     public function test_room_service()
     {
         $url = 'https://iptv-hms.socket.dev.mas-ts.com';
-        // $url = 'http://localhost:8000';
+        // $url = 'http://10.218.15.221:8000';
 
         $options = ['client' => Client::CLIENT_4X];
 
@@ -277,11 +277,10 @@ class RoomServiceRequestController extends Controller
         $client->connect();
 
         $data = [
-            'hotel_id' => 13,
+            'hotel_id' => 1,
             'message' => "New room service request!"
         ];
 
-        $client->emit('roomService', $data);
         $client->emit('newRoomServiceRequest', $data);
 
         $client->disconnect();
@@ -292,7 +291,7 @@ class RoomServiceRequestController extends Controller
     public function test_food_order()
     {
         $url = 'https://iptv-hms.socket.dev.mas-ts.com';
-        // $url = 'http://localhost:8000';
+        // $url = 'http://10.218.15.221:8000';
 
         $options = ['client' => Client::CLIENT_4X];
 
@@ -300,11 +299,10 @@ class RoomServiceRequestController extends Controller
         $client->connect();
 
         $data = [
-            'hotel_id' => 13,
+            'hotel_id' => 1,
             'message' => "New food order!"
         ];
 
-        $client->emit('kitchen', $data);
         $client->emit('newFoodOrder', $data);
 
         $client->disconnect();
