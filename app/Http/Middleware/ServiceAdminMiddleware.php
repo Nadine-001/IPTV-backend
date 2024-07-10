@@ -36,7 +36,7 @@ class ServiceAdminMiddleware
         // $admin = User::where('email', $email)->first();
         // $role_id = $admin->role_id;
 
-        if ($request->user() && $request->user()->role_id == 3 || $request->user() && $request->user()->role_id >= 99) {
+        if ($request->user() && $request->user()->role_id == 3 || $request->user() && $request->user()->role_id == 4 || $request->user() && $request->user()->role_id >= 99) {
             return $next($request);
         }
 
