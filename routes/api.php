@@ -153,6 +153,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/accept_service_request/{room_service_request_id}', [ServiceController::class, 'accept_service_request']);
         Route::post('/decline_service_request/{room_service_request_id}', [ServiceController::class, 'decline_service_request']);
         Route::get('/room_service_history/{hotel_id}', [ServiceController::class, 'room_service_history']);
+    });
+
+    // KITCHEN
+    Route::middleware('kitchen')->group(function () {
         Route::get('/food_service_list/{hotel_id}', [ServiceController::class, 'food_service_list']);
         // Route::get('/food_service_detail/{food_service_request_id}', [ServiceController::class, 'food_service_detail']);
         Route::post('/accept_food_order/{food_service_request_id}', [ServiceController::class, 'accept_food_order']);
