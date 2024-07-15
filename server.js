@@ -78,10 +78,10 @@ http.listen(process.env.PORT || 8000, function () {
             console.log(roomServiceRoom);
         });
 
-        socket.on("onDelivery", function (data) {
-            console.log("onDelivery :", data);
+        socket.on("isDelivered", function (data) {
+            console.log("isDelivered :", data);
             let televisionRoom = "Television" + data["mac_address"];
-            socketIO.to(televisionRoom).emit("deliveryNotif", data["message"]);
+            socketIO.to(televisionRoom).emit("deliverNotif", data["message"]);
             console.log(televisionRoom);
         });
 
