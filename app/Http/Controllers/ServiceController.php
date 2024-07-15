@@ -9,6 +9,7 @@ use App\Models\RoomService;
 use App\Models\RoomServiceRequest;
 use App\Models\RoomServiceRequestDetail;
 use App\Models\Television;
+use ElephantIO\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -111,6 +112,23 @@ class ServiceController extends Controller
             $room_service_request->update([
                 'is_accepted' => $is_accepted
             ]);
+
+            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+            // $url = 'http://10.218.15.221:8000';
+
+            $options = ['client' => Client::CLIENT_4X];
+
+            $client = Client::create($url, $options);
+            $client->connect();
+
+            $data = [
+                'mac_address' => $room_service_request->television->mac_address,
+                'message' => "Your request has been delivered!"
+            ];
+
+            $client->emit('isDelivered', $data);
+
+            $client->disconnect();
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to accept the request',
@@ -314,6 +332,19 @@ class ServiceController extends Controller
             $food_order->update([
                 'is_accepted' => $is_accepted
             ]);
+
+            $url = 'https://iptv-hms.socket.dev.mas-ts.com';
+            // $url = 'http://10.218.15.221:8000';
+
+            $options = ['client' => Client::CLIENT_4X];
+
+            $client = Client::create($url, $options);
+            $client->connect();
+
+            $data = [
+                'mac_address' => $food_order->television->mac_address,
+                'message' => "Your request has been delivered!"
+            ];
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to accept the order',
@@ -455,7 +486,8 @@ class ServiceController extends Controller
         ]);
     }
 
-    public function revenue($hotel_id) {
+    public function revenue($hotel_id)
+    {
         $food_order_requests = FoodServiceRequest::where('hotel_id', $hotel_id)
             ->where('is_accepted', 1)
             ->where('is_paid', 1)
@@ -474,8 +506,8 @@ class ServiceController extends Controller
                 $guest_name = $television->guest_name;
                 $total = $order_request->total;
                 $payment_method = $order_request->payment_method;
-                $order_made = explode(' ',$order_request->created_at);
-                $order_complete = explode(' ',$order_request->updated_at);
+                $order_made = explode(' ', $order_request->created_at);
+                $order_complete = explode(' ', $order_request->updated_at);
 
                 $transaction_data[] = [
                     'room_number' => $room_number,
