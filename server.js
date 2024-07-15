@@ -38,6 +38,12 @@ http.listen(process.env.PORT || 8000, function () {
             console.log(room);
         });
 
+        socket.on("television", function (data) {
+            let room = "Television" + data["mac_address"];
+            socket.join(room);
+            console.log(room);
+        });
+
         socket.on("kitchenLeave", function (data) {
             let room = "Kitchen" + data["hotel_id"] + 4;
             socket.leave(room);
@@ -70,6 +76,13 @@ http.listen(process.env.PORT || 8000, function () {
             let receptionistRoom = "Receptionist" + data["hotel_id"] + 2;
             socketIO.to(roomServiceRoom).to(receptionistRoom).emit("roomRequestAlert", data["message"]);
             console.log(roomServiceRoom);
+        });
+
+        socket.on("onDelivery", function (data) {
+            console.log("onDelivery :", data);
+            let televisionRoom = "Television" + data["mac_address"];
+            socketIO.to(televisionRoom).emit("deliveryNotif", data["message"]);
+            console.log(televisionRoom);
         });
 
         socket.on("disconnect", function () {
