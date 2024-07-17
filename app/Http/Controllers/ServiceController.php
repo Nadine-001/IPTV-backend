@@ -343,8 +343,12 @@ class ServiceController extends Controller
 
             $data = [
                 'mac_address' => $food_order->television->mac_address,
-                'message' => "Your request has been delivered!"
+                'message' => "Your order has been delivered!"
             ];
+
+            $client->emit('isDelivered', $data);
+
+            $client->disconnect();
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to accept the order',
