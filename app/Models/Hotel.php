@@ -12,6 +12,9 @@ class Hotel extends Model
 
     protected $fillable = [
         'name',
+        'subscription',
+        'subscription_start',
+        'subscription_duration',
         'class',
         'check_in',
         'check_out',

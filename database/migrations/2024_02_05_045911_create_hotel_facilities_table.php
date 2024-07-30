@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('hotel_id')->index();
             $table->foreign('hotel_id')->references('id')->on('hotels');
             $table->string('name');
+            $table->string('subscription')->nullable();
+            $table->date('subscription_start')->nullable();
+            $table->string('subscription_duration')->nullable();
             $table->string('description');
             $table->string('image')->nullable();
             $table->boolean('is_deleted')->default(false);
