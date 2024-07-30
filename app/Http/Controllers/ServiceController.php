@@ -11,6 +11,7 @@ use App\Models\RoomServiceRequestDetail;
 use App\Models\Television;
 use ElephantIO\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
@@ -42,12 +43,14 @@ class ServiceController extends Controller
                     $service_name = $room_service->name;
                     $service_image = $room_service->image;
                     $request_qty = $request_service->qty;
+                    $created_at = $room_service_request->created_at;
 
                     $request_detail[] = [
                         'service_id' => $room_service_id,
                         'service_name' => $service_name,
                         'service_image' => $service_image,
                         'request_qty' => $request_qty,
+                        'created_at' => $created_at->format('Y-m-d H:i'),
                     ];
                 }
 
@@ -173,6 +176,7 @@ class ServiceController extends Controller
 
             foreach ($room_service_request as $service_request) {
                 $is_accepted = $service_request->is_accepted;
+                $updated_at = $service_request->updated_at;
 
                 $television_id = $service_request->television_id;
                 $television = Television::where('id', $television_id)->first();
@@ -205,6 +209,7 @@ class ServiceController extends Controller
                     'room_number' => $room_number,
                     'service_detail' => $request_detail,
                     'is_accepted' => $is_accepted,
+                    'done_at' => $updated_at->format('Y-m-d H:i'),
                 ];
             }
         } catch (\Throwable $th) {
@@ -251,6 +256,7 @@ class ServiceController extends Controller
                     $order_total = $food_service_request->total;
                     $order_payment = $food_service_request->payment_method;
                     $order_status = $food_service_request->is_paid;
+                    $created_at = $food_service_request->created_at;
 
                     $order_detail[] = [
                         'menu_id' => $menu_id,
@@ -270,6 +276,7 @@ class ServiceController extends Controller
                     'order_total' => $order_total,
                     'order_payment' => $order_payment,
                     'order_status' => $order_status,
+                    'created_at' => $created_at->format('Y-m-d H:i'),
                 ];
             }
         } catch (\Throwable $th) {
@@ -440,6 +447,7 @@ class ServiceController extends Controller
             foreach ($food_order_request as $order_request) {
                 $is_accepted = $order_request->is_accepted;
                 $total = $order_request->total;
+                $updated_at = $order_request->updated_at;
 
                 $television_id = $order_request->television_id;
                 $television = Television::where('id', $television_id)->first();
@@ -476,11 +484,226 @@ class ServiceController extends Controller
                     'order_detail' => $order_detail,
                     'is_accepted' => $is_accepted,
                     'total' => $total,
+                    'done_at' => $updated_at->format('Y-m-d H:i'),
                 ];
             }
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => 'failed to get room service request history',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'order_history_list' => $order_history_list
+        ]);
+    }
+
+    public function room_service_statistic($hotel_id)
+    {
+        $room_services = RoomService::where('hotel_id', $hotel_id)->get();
+
+        try {
+            $statistic = [];
+
+            foreach ($room_services as $room_service) {
+                $count = RoomServiceRequestDetail::where('room_service_id', $room_service->id)->count();
+
+                $statistic[$room_service->name] = $count;
+            }
+
+            $undelivered_total = RoomServiceRequest::where('hotel_id', $hotel_id)->where('is_accepted', 0)->count();
+            $request_used = RoomServiceRequest::where('hotel_id', $hotel_id)->count();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get room service statistic',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'statistic' => $statistic,
+            'undelivered_total' => $undelivered_total,
+            'request_used' => $request_used,
+        ]);
+    }
+
+    public function room_service_table($hotel_id)
+    {
+        $room_service_request = RoomServiceRequest::where('hotel_id', $hotel_id)
+            ->where('is_accepted', '!=', null)
+            ->get();
+
+        try {
+            $room_service_list = [];
+
+            foreach ($room_service_request as $service_request) {
+                $created_at = $service_request->created_at;
+
+                $television_id = $service_request->television_id;
+                $television = Television::where('id', $television_id)->first();
+
+                $room_number = $television->room_number;
+
+                $request_services = RoomServiceRequestDetail::where('room_service_request_id', $service_request->id)->get();
+
+                $request_detail = [];
+
+                foreach ($request_services as $request_service) {
+                    $room_service_id = $request_service->room_service_id;
+                    $room_service = RoomService::where('id', $room_service_id)->first();
+
+                    $service_name = $room_service->name;
+                    $service_image = $room_service->image;
+
+                    $quantity = $request_service->qty;
+
+                    $request_detail[] = [
+                        'room_service_id' => $room_service_id,
+                        'service_name' => $service_name,
+                        'service_image' => $service_image,
+                        'quantity' => $quantity,
+                    ];
+                }
+
+                $room_service_list[] = [
+                    'id' => $service_request->id,
+                    'room_number' => $room_number,
+                    'service_detail' => $request_detail,
+                    'created_at' => $created_at->format('Y-m-d H:i'),
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get room service table',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'room_service_list' => $room_service_list
+        ]);
+    }
+
+    public function food_order_statistic($hotel_id)
+    {
+        $menus = FoodServiceRequestDetail::join('menus', 'food_service_request_details.menu_id', '=', 'menus.id')
+            ->where('menus.hotel_id', $hotel_id)
+            ->select('menus.type', DB::raw('count(*) as total'))
+            ->groupBy('menus.type')
+            ->get();
+
+        try {
+            $statistic = [];
+
+            foreach ($menus as $menu) {
+                $statistic[$menu->type] = $menu->total;
+            }
+
+            $cash_payment = FoodServiceRequest::where('hotel_id', $hotel_id)
+                ->where('payment_method', 'Cash')
+                ->count();
+
+            $scan_qr_payment = FoodServiceRequest::where('hotel_id', $hotel_id)
+                ->where('payment_method', 'Scan QR')
+                ->count();
+
+            $balance = FoodServiceRequest::where('hotel_id', $hotel_id)
+                ->where('payment_method', 'Scan QR')
+                ->where('is_paid', 1)
+                ->where('is_withdrawn', 0)
+                ->sum('total');
+
+            $withdrawn = FoodServiceRequest::where('payment_method', 'Scan QR')
+                ->where('is_paid', 1)
+                ->where('is_withdrawn', 1)
+                ->sum('total');
+
+            $cash_total = FoodServiceRequest::where('payment_method', 'Cash')
+                ->where('is_accepted', 1)
+                ->where('payment_method', 'Cash')
+                ->sum('total');
+
+            $unpaid_total = FoodServiceRequest::where('is_paid', 0)->sum('total');
+            $order_total = FoodServiceRequest::sum('total');
+            $undelivered_total = FoodServiceRequest::where('is_accepted', 0)->count();
+            $request_used = FoodServiceRequest::count();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get food order statistic',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'statistic' => $statistic,
+            'cash_payment' => $cash_payment,
+            'scan_qr_payment' => $scan_qr_payment,
+            'withdrawn' => $withdrawn,
+            'balance' => $balance,
+            'cash_total' => $cash_total,
+            'unpaid_total' => $unpaid_total,
+            'undelivered_total' => $undelivered_total,
+            'order_total' => $order_total,
+            'request_used' => $request_used,
+        ]);
+    }
+
+    public function food_order_table($hotel_id)
+    {
+        $food_order_request = FoodServiceRequest::where('hotel_id', $hotel_id)
+            ->where('is_accepted', '!=', null)
+            ->get();
+
+        try {
+            $food_order_list = [];
+
+            foreach ($food_order_request as $order_request) {
+                $is_accepted = $order_request->is_accepted;
+                $total = $order_request->total;
+                $payment_method = $order_request->payment_method;
+                $created_at = $order_request->created_at;
+
+                $television_id = $order_request->television_id;
+                $television = Television::where('id', $television_id)->first();
+
+                $room_number = $television->room_number;
+
+                $food_orders = FoodServiceRequestDetail::where('food_service_request_id', $order_request->id)->get();
+
+                $order_detail = [];
+
+                foreach ($food_orders as $food_order) {
+                    $menu_id = $food_order->menu_id;
+                    $menu = Menu::where('id', $menu_id)->first();
+
+                    $menu_name = $menu->name;
+                    $menu_price = $menu->price;
+                    $menu_image = $menu->image;
+                    $quantity = $food_order->qty;
+
+                    $order_detail[] = [
+                        'menu_id' => $menu_id,
+                        'menu_name' => $menu_name,
+                        'menu_price' => $menu_price,
+                        'menu_image' => $menu_image,
+                        'quantity' => $quantity,
+                    ];
+                }
+
+                $order_history_list[] = [
+                    'id' => $order_request->id,
+                    'room_number' => $room_number,
+                    'order_detail' => $order_detail,
+                    'is_accepted' => $is_accepted,
+                    'payment_method' => $payment_method,
+                    'total' => $total,
+                    'created_at' => $created_at->format('Y-m-d H:i'),
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to get food order table',
                 'errors' => $th->getMessage()
             ], 400);
         }
