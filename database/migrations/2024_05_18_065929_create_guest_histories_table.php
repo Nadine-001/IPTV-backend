@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('hotel_id')->index();
             $table->foreign('hotel_id')->references('id')->on('hotels');
             $table->integer('room_number');
+            $table->string('room_type');
             $table->string('guest_name');
             $table->datetime('check_in');
             $table->datetime('check_out');
