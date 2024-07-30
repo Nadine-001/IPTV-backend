@@ -639,6 +639,7 @@ class FoodServiceRequestController extends Controller
                         'order_id' => NULL,
                         'qr_code' => NULL,
                         'qr_code_expire_time' => NULL,
+                        'is_withdrawn' => NULL,
                     ]);
 
                     $url = 'https://iptv-hms.socket.dev.mas-ts.com';
@@ -656,7 +657,7 @@ class FoodServiceRequestController extends Controller
 
                     $client->emit('newFoodOrder', $data);
                     $client->disconnect();
-                    
+
                     return response()->json([
                         'food_request_id' => $food_service_request->id,
                         'payment_method' => $food_service_request->payment_method,
@@ -776,6 +777,7 @@ class FoodServiceRequestController extends Controller
                         'qr_code' => NULL,
                         'qr_code_expire_time' => NULL,
                         'is_notified' => 1,
+                        'is_withdrawn' => 0,
                     ]);
 
                     $url = 'https://iptv-hms.socket.dev.mas-ts.com';
