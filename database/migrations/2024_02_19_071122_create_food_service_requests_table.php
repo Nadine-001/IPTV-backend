@@ -25,6 +25,7 @@ return new class extends Migration
             $table->datetime('qr_code_expire_time')->nullable();
             $table->boolean('is_accepted')->nullable();
             $table->boolean('is_notified')->nullable();
+            $table->boolean('is_withdrawn')->nullable();
             $table->timestamps();
         });
     }

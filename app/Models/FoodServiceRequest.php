@@ -22,6 +22,7 @@ class FoodServiceRequest extends Model
         'is_paid',
         'order_id',
         'is_notified',
+        'is_withdrawn',
     ];
 
     public function hotel(): BelongsTo
