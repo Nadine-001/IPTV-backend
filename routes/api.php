@@ -5,12 +5,15 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\FoodServiceRequestController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\GuestHistoryController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomServiceRequestController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TelevisionController;
+use App\Http\Controllers\WithdrawalController;
+use App\Models\Television;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -128,6 +131,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/menu/{menu_id}', [ContentController::class, 'menu_update']);
         Route::post('/menu_image/{menu_id}', [ContentController::class, 'update_menu_image']);
         Route::delete('/menu/{menu_id}', [ContentController::class, 'menu_delete']);
+        Route::get('/guest_history_statistic/{hotel_id}', [GuestHistoryController::class, 'statistic']);
+        Route::get('/guest_history_table/{hotel_id}', [GuestHistoryController::class, 'guest_history']);
+        Route::get('/room_service_history_statistic/{hotel_id}', [ServiceController::class, 'room_service_statistic']);
+        Route::get('/room_service_history_table/{hotel_id}', [ServiceController::class, 'room_service_table']);
+        Route::get('/food_order_history_statistic/{hotel_id}', [ServiceController::class, 'food_order_statistic']);
+        Route::get('/food_order_history_table/{hotel_id}', [ServiceController::class, 'food_order_table']);
+        Route::get('/withdrawal_nominal/{hotel_id}', [WithdrawalController::class, 'nominal']);
+        Route::post('/request_withdrawal/{hotel_id}', [WithdrawalController::class, 'request_withdrawal']);
+        Route::get('/withdrawal_history/{hotel_id}', [WithdrawalController::class, 'withdrawal_request_history']);
     });
 
     // RECEPTIONIST
@@ -139,11 +151,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/guest_data/{room_number_id}', [GuestController::class, 'guest_data']);
         Route::put('/guest/{room_number_id}', [GuestController::class, 'update_guest']);
         Route::post('/check_out/{room_number_id}', [GuestController::class, 'check_out']);
-        Route::delete('/guest/{room_number_id}', [GuestController::class, 'delete_guest']);
+        Route::get('/room_statistic/{hotel_id}', [GuestController::class, 'statistic']);
+        // Route::delete('/guest/{room_number_id}', [GuestController::class, 'delete_guest']);
         Route::get('/room_service_ls/{hotel_id}', [ServiceController::class, 'room_service_list']);
         Route::get('/history_room_service/{hotel_id}', [ServiceController::class, 'room_service_history']);
         Route::get('/food_service_ls/{hotel_id}', [ServiceController::class, 'food_service_list']);
         Route::get('/history_food_service/{hotel_id}', [ServiceController::class, 'food_service_history']);
+        Route::get('/guest_statistic/{hotel_id}', [GuestHistoryController::class, 'statistic']);
+        Route::get('/guest_history/{hotel_id}', [GuestHistoryController::class, 'guest_history']);
     });
 
     // SERVICE ADMIN
@@ -185,5 +200,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/hotel_list', [ClientController::class, 'hotel_list']);
         Route::get('/television_list/{hotel_id}', [ClientController::class, 'television_list']);
         Route::get('/guest_list/{hotel_id}', [ClientController::class, 'guest_list']);
+        Route::get('/report', [ClientController::class, 'report']);
+        Route::get('/withdrawal_list', [WithdrawalController::class, 'withdrawal_request_list']);
+        Route::post('/upload_receipt/{withdrawal_id}', [WithdrawalController::class, 'upload_payment_receipt']);
+        Route::post('/add_channel', [TelevisionController::class, 'add_channel']);
+        Route::post('/add_package', [TelevisionController::class, 'add_package']);
+        Route::get('/package_list', [TelevisionController::class, 'package_list']);
+        Route::post('/update_package/{package_id}', [TelevisionController::class, 'package_update']);
+        Route::delete('/delete_package/{package_id}', [TelevisionController::class, 'package_delete']);
+        Route::get('/package_info', [TelevisionController::class, 'package_info']);
+        Route::post('/set_package/{hotel_id}', [TelevisionController::class, 'set_package']);
+        Route::get('/subscription_list', [TelevisionController::class, 'subscription_list']);
     });
 });
