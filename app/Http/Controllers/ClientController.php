@@ -534,4 +534,34 @@ class ClientController extends Controller
             'guest_history' => $guest_history
         ]);
     }
+
+    public function report()
+    {
+        $hotels = Hotel::all();
+
+        try {
+            $hotel_list = [];
+
+            foreach ($hotels as $hotel) {
+                $hotel_name = $hotel->name;
+                $hotel_subscribe = $hotel->subscribe;
+                $hotel_status = $hotel->is_active;
+
+                $hotel_list[] = [
+                    'hotel_name' => $hotel_name,
+                    'hotel_subscribe' => $hotel_subscribe,
+                    'hotel_status' => $hotel_status,
+                ];
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'failed to save check out time',
+                'errors' => $th->getMessage()
+            ], 400);
+        }
+
+        return response()->json([
+            'hotel_list' => $hotel_list
+        ]);
+    }
 }
