@@ -61,7 +61,7 @@ class GuestController extends Controller
             'room_type' => 'required',
             'guest_name' => 'required',
             'guest_gender' => 'required',
-            // 'check_in' => 'required',
+            'check_in' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -180,27 +180,23 @@ class GuestController extends Controller
         return response()->json('guest data updated succesfully');
     }
 
-    public function check_out(Request $request, $room_number_id)
+    public function check_out($room_number_id)
     {
-        $validator = Validator::make($request->all(), [
-            'check_out' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
+        $television = Television::where('id', $room_number_id)->first();
 
         try {
-            $television = Television::where('id', $room_number_id)->first();
+            date_default_timezone_set('Asia/Jakarta');
+            $check_out = date('Y-m-d H:i');
 
             DB::beginTransaction();
 
             GuestHistory::create([
                 'hotel_id' => $television->hotel_id,
                 'room_number' => $television->room_number,
+                'room_type' => $television->room_type,
                 'guest_name' => $television->guest_name,
                 'check_in' => $television->check_in,
-                'check_out' => $request->check_out,
+                'check_out' => $check_out,
             ]);
 
             $television->update([
@@ -219,29 +215,49 @@ class GuestController extends Controller
         }
 
         return response()->json([
-            'message' => 'success add data to history '
+            'message' => 'success add data to history'
         ]);
     }
 
-    public function delete_guest($room_number_id)
+    public function statistic($hotel_id)
     {
-        $television = Television::where('id', $room_number_id)->first();
-
         try {
-            $television->update([
-                'room_type' => null,
-                'guest_name' => null,
-                'guest_gender' => null,
-            ]);
+            $occupied_room = Television::where('hotel_id', $hotel_id)->where('guest_name', '!=', NULL)->count();
+            $available_room = Television::where('hotel_id', $hotel_id)->where('guest_name', '==', NULL)->count();
+            $room_total = Television::where('hotel_id', $hotel_id)->count();
         } catch (\Throwable $th) {
             return response()->json([
-                'message' => 'failed to delete guest data',
+                'message' => 'failed to get room statistic',
                 'errors' => $th->getMessage()
             ], 400);
         }
 
         return response()->json([
-            "message" => "guest data deleted successfully"
+            'occupied_room' => $occupied_room,
+            'available_room' => $available_room,
+            'room_total' => $room_total
         ]);
     }
+
+    // public function delete_guest($room_number_id)
+    // {
+    //     $television = Television::where('id', $room_number_id)->first();
+
+    //     try {
+    //         $television->update([
+    //             'room_type' => null,
+    //             'guest_name' => null,
+    //             'guest_gender' => null,
+    //         ]);
+    //     } catch (\Throwable $th) {
+    //         return response()->json([
+    //             'message' => 'failed to delete guest data',
+    //             'errors' => $th->getMessage()
+    //         ], 400);
+    //     }
+
+    //     return response()->json([
+    //         "message" => "guest data deleted successfully"
+    //     ]);
+    // }
 }
